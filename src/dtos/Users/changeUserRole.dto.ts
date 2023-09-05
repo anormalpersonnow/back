@@ -9,7 +9,7 @@ export interface ChangeUserRoleInputDTO {
 
 export interface ChangeUserRoleOutputDTO {
     id: string,
-    name: string,
+    username: string,
     role: USER_ROLES
 }
 

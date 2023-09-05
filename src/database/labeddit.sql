@@ -37,7 +37,7 @@ CREATE TABLE if NOT EXISTS posts(
     ON UPDATE CASCADE
     ON DELETE CASCADE  
 );
-CREATE TABLE if NOT EXISTS likes_dislikes(    
+CREATE TABLE if NOT EXISTS likes_dislikes_posts(    
     user_id TEXT UNIQUE NOT NULL,
     post_id TEXT UNIQUE NOT NULL,
     like INTEGER NOT NULL,
@@ -47,3 +47,12 @@ CREATE TABLE if NOT EXISTS likes_dislikes(
     ON DELETE CASCADE   
 );
 
+CREATE TABLE if NOT EXISTS likes_dislikes_topics(    
+    user_id TEXT UNIQUE NOT NULL,
+    topic_id TEXT UNIQUE NOT NULL,
+    like INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id), 
+    FOREIGN KEY (topic_id) REFERENCES topics(id)  
+    ON UPDATE CASCADE
+    ON DELETE CASCADE   
+);

@@ -39,11 +39,11 @@ export class User {
         this.id = value
     }
 
-    public getUserName(): string {
+    public getUsername(): string {
         return this.username
     }
 
-    public setUserName(value: string): void {
+    public setUsername(value: string): void {
         this.username = value
     }
 

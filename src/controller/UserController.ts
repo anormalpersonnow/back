@@ -37,10 +37,10 @@ export class UserController {
     }
 
     
-    public getUserByName = async (req: Request, res: Response) => {
+    public getUserByUsername = async (req: Request, res: Response) => {
       try {
         const input = GetUsersSchema.parse({
-          name: req.params.name,
+          username: req.params.username,
           token: req.headers.authorization
       })
 
@@ -64,7 +64,7 @@ export class UserController {
 
         try {
             const input = SignupSchema.parse({
-                name: req.body.name,
+                username: req.body.username,
                 email: req.body.email,
                 password: req.body.password,
             })
@@ -113,7 +113,7 @@ export class UserController {
   
         const input = EditUserSchema.parse({
           idToEdit: req.params.id,
-          name: req.body.name,
+          username: req.body.username,
           email: req.body.email,
           password: req.body.password,
           token: req.headers.authorization

@@ -22,19 +22,17 @@ export class UserDatabase extends BaseDatabase {
 
   }
 
-  public findUserByName = async (name: string | undefined) => {
+  public findUserByUsername = async (username: string) => {
+    const userDB = await BaseDatabase
+      .connection(UserDatabase.TABLE_USERS)
+      .select()
+      .where({ username })
 
-      const userDB: UserDB[] = await BaseDatabase
-        .connection(UserDatabase.TABLE_USERS)
-        .select()
-        .where("name", "LIKE", `%${name}%`)
-
-      return userDB
+    return userDB
   }
-  
 
   public findUserById = async (id: string) => {
-    const [userDB]: UserDB[] | undefined[] = await BaseDatabase
+    const [userDB]: UserDB[]= await BaseDatabase
       .connection(UserDatabase.TABLE_USERS)
       .select()
       .where({ id })
@@ -43,7 +41,7 @@ export class UserDatabase extends BaseDatabase {
   }
 
   public findUserByEmail = async (email: string) => {
-    const [userDB]: UserDB[] | undefined[] = await BaseDatabase
+    const [userDB]: UserDB[] = await BaseDatabase
       .connection(UserDatabase.TABLE_USERS)
       .select()
       .where({ email })

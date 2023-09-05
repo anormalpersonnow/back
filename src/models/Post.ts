@@ -9,7 +9,7 @@ export interface PostDB {
 }
 
 export interface PostDBWithCreator extends PostDB{
-    creator_name: string
+    creator_username: string
 }
 
 export interface PostModel {
@@ -21,7 +21,7 @@ export interface PostModel {
     updated_at: string,
     creator: {
         id: string,
-        name: string
+        username: string
     }
 }
 
@@ -34,7 +34,7 @@ export class Post {
         private createdAt: string,
         private updatedAt: string,
         private creatorId: string,
-        private creatorName: string
+        private creatorUsername: string
     ) { }
 
     public getId(): string {
@@ -109,12 +109,12 @@ export class Post {
         this.creatorId = value
     }
 
-    public getCreatorName(): string {
-        return this.creatorName
+    public getCreatorUsername(): string {
+        return this.creatorUsername
     }
 
-    public setCreatorName(value: string): void {
-        this.creatorName = value
+    public setCreatorUsername(value: string): void {
+        this.creatorUsername = value
     }
 
 
@@ -140,7 +140,7 @@ export class Post {
             updated_at: this.updatedAt,
             creator: {
                 id: this.creatorId,
-                name: this.creatorName
+                username: this.creatorUsername
             }
             }
         }

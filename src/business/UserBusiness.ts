@@ -27,7 +27,7 @@ export class UserBusiness {
   public signup = async (
     input: SignupInputDTO
   ): Promise<SignupOutputDTO> => {
-    const { name, email, password } = input
+    const { username, email, password } = input
 
     const id = this.idGenerator.generate()
     const hashedPassword = await this.hashManager.hash(password)
@@ -42,7 +42,7 @@ export class UserBusiness {
 
     const newUser = new User(
       id,
-      name,
+      username,
       email,
       hashedPassword,
       role,
@@ -51,7 +51,7 @@ export class UserBusiness {
 
     const newUserDB: UserDB = {
       id: newUser.getId(),
-      name: newUser.getName(),
+      username: newUser.getUsername(),
       email: newUser.getEmail(),
       password: newUser.getPassword(),
       role: newUser.getRole(),
@@ -63,7 +63,7 @@ export class UserBusiness {
     const token = this.tokenManager.createToken({
       id: newUser.getId(),
       role: newUser.getRole(),
-      name: newUser.getName()
+      username: newUser.getUsername()
     })
 
     const output = {
@@ -95,7 +95,7 @@ export class UserBusiness {
     const token = this.tokenManager.createToken({
       id: userDB.id,
       role: userDB.role,
-      name: userDB.name
+      username: userDB.username
     })
 
     const output: LoginOutputDTO = {
@@ -109,19 +109,19 @@ export class UserBusiness {
     input: GetUsersInputDTO
   ): Promise<GetUsersOutputDTO> => {
 
-    const { name, token } = input
+    const { username, token } = input
     const payload = this.tokenManager.getPayload(token)
 
     if (!payload || payload === null) {
       throw new UnauthorizedError()
     }
 
-    const usersDB = await this.userDatabase.getUsers()
+    const userFoundDB = await this.userDatabase.getUsers()
 
-    const users = usersDB.map((userDB) => {
+    const users = userFoundDB.map((userDB) => {
       const user = new User(
         userDB.id,
-        userDB.name,
+        userDB.username,
         userDB.email,
         userDB.password,
         userDB.role,
@@ -138,19 +138,19 @@ export class UserBusiness {
     input: GetUsersInputDTO
   ): Promise<GetUsersOutputDTO> => {
 
-    const { name, token } = input
+    const { username, token } = input
     const payload = this.tokenManager.getPayload(token)
 
     if (!payload || payload === null) {
       throw new UnauthorizedError()
     }
 
-    const usersDB = await this.userDatabase.findUserByName(name)
+    const userFoundDB = await this.userDatabase.findUserByUsername(username)
 
-    const users = usersDB.map((userDB) => {
+    const users = userFoundDB.map((userDB) => {
       const user = new User(
         userDB.id,
-        userDB.name,
+        userDB.username,
         userDB.email,
         userDB.password,
         userDB.role,
@@ -169,7 +169,7 @@ export class UserBusiness {
 
     const {
       idToEdit,
-      name,
+      username,
       email,
       password,
       token
@@ -189,7 +189,7 @@ export class UserBusiness {
 
     const user = new User(
       userToEditDB.id,
-      userToEditDB.name,
+      userToEditDB.username,
       userToEditDB.email,
       userToEditDB.password,
       userToEditDB.role,
@@ -201,12 +201,12 @@ export class UserBusiness {
     }
 
     email && user.setEmail(email)
-    name && user.setName(name)
+    username && user.setUsername(username)
     password && user.setPassword(password)
 
     const updatedUserDB: UserDB = {
       id: user.getId(),
-      name: user.getName(),
+      username: user.getUsername(),
       email: user.getEmail(),
       password: user.getPassword(),
       role: user.getRole(),
@@ -217,7 +217,7 @@ export class UserBusiness {
 
     const output = {
       message: "Usuário editado com sucesso",
-      name: user.getName(),
+      username: user.getUsername(),
       email: user.getEmail(),
       password: user.getPassword(),
       role: user.getRole(),
@@ -252,7 +252,7 @@ export class UserBusiness {
 
     const user = new User(
       userToEditDB.id,
-      userToEditDB.name,
+      userToEditDB.username,
       userToEditDB.email,
       userToEditDB.password,
       userToEditDB.role,
@@ -267,7 +267,7 @@ export class UserBusiness {
 
     const updatedUserDB: UserDB = {
       id: user.getId(),
-      name: user.getName(),
+      username: user.getUsername(),
       email: user.getEmail(),
       password: user.getPassword(),
       role: user.getRole(),
@@ -278,7 +278,7 @@ export class UserBusiness {
 
     const output = {
       id: user.getId(),
-      name: user.getName(),
+      username: user.getUsername(),
       role: user.getRole(),
     }
 
@@ -310,7 +310,7 @@ export class UserBusiness {
 
     const user = new User(
       userToDeleteDB.id,
-      userToDeleteDB.name,
+      userToDeleteDB.username,
       userToDeleteDB.email,
       userToDeleteDB.password,
       userToDeleteDB.role,

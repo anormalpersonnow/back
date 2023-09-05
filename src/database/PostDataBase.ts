@@ -1,4 +1,4 @@
-import { LikeOrDislikeDB, POST_LIKE } from "../models/Like";
+import { LikeOrDislikeDB, POST_LIKE } from "../models/LikePost";
 import { PostDB, PostDBWithCreator, PostModel } from "../models/Post";
 import { BaseDatabase } from "./BaseDatabase";
 import { UserDatabase } from "./UserDataBase";
@@ -6,7 +6,7 @@ import { UserDatabase } from "./UserDataBase";
 export class PostDatabase extends BaseDatabase {
 
   public static TABLE_POSTS = "posts";
-  public static TABLE_LIKES_DISLIKES = "likes_dislikes";
+  public static TABLE_LIKES_DISLIKES = "likes_dislikes_posts";
 
   public createPost = async (
     newPostDB: PostDB
@@ -29,7 +29,7 @@ export class PostDatabase extends BaseDatabase {
         `${PostDatabase.TABLE_POSTS}.dislikes`,
         `${PostDatabase.TABLE_POSTS}.created_at`,
         `${PostDatabase.TABLE_POSTS}.updated_at`,
-        `${UserDatabase.TABLE_USERS}.name as creator_name`
+        `${UserDatabase.TABLE_USERS}.username as creator_username`
       )
       .join(
         `${UserDatabase.TABLE_USERS}`,
@@ -55,7 +55,7 @@ export class PostDatabase extends BaseDatabase {
         `${PostDatabase.TABLE_POSTS}.dislikes`,
         `${PostDatabase.TABLE_POSTS}.created_at`,
         `${PostDatabase.TABLE_POSTS}.updated_at`,
-        `${UserDatabase.TABLE_USERS}.name as creator_name`
+        `${UserDatabase.TABLE_USERS}.username as creator_username`
       )
       .join(
         `${UserDatabase.TABLE_USERS}`,
@@ -82,7 +82,7 @@ export class PostDatabase extends BaseDatabase {
         `${PostDatabase.TABLE_POSTS}.dislikes`,
         `${PostDatabase.TABLE_POSTS}.created_at`,
         `${PostDatabase.TABLE_POSTS}.updated_at`,
-        `${UserDatabase.TABLE_USERS}.name as creator_name`
+        `${UserDatabase.TABLE_USERS}.username as creator_username`
       )
       .join(
         `${UserDatabase.TABLE_USERS}`,
@@ -104,7 +104,7 @@ export class PostDatabase extends BaseDatabase {
       .select(
         `${PostDatabase.TABLE_POSTS}.id as post_id`,
         `${PostDatabase.TABLE_POSTS}.creator_id`,
-        `${UserDatabase.TABLE_USERS}.name as creator_name`,
+        `${UserDatabase.TABLE_USERS}.username as creator_username`,
         `${PostDatabase.TABLE_POSTS}.content`
       )
       .join(
@@ -163,7 +163,7 @@ export class PostDatabase extends BaseDatabase {
         `${PostDatabase.TABLE_POSTS}.dislikes`,
         `${PostDatabase.TABLE_POSTS}.created_at`,
         `${PostDatabase.TABLE_POSTS}.updated_at`,
-        `${UserDatabase.TABLE_USERS}.name as creator_name`
+        `${UserDatabase.TABLE_USERS}.username as creator_username`
       )
       .join(
         `${UserDatabase.TABLE_USERS}`,
