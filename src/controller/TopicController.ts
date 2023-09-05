@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { PostBusiness } from "../business/PostBusiness"
+import { TopicBusiness } from "../business/TopicBusiness"
 import { BaseError } from "../errors/BaseError"
 import { ZodError } from "zod"
 import { EditPostSchema } from "../dtos/Posts/editPost.dto"
@@ -10,17 +10,17 @@ import { LikeOrDislikePostSchema } from "../dtos/Posts/likeOrDislike.dto"
 
 export class PostController {
 
-  constructor(private postBusiness: PostBusiness) { }
+  constructor(private topicBusiness: TopicBusiness) { }
 
   
-  public getPosts = async (req: Request, res: Response) => {
+  public getTopics = async (req: Request, res: Response) => {
 
     try {
           const input = GetPostsSchema.parse({
             token: req.headers.authorization
         })
 
-      const output = await this.postBusiness.getPosts(input)
+      const output = await this.topicBusiness.getTopics(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -37,15 +37,15 @@ export class PostController {
   }
 
 
-  public getPostsByContent = async (req: Request, res: Response) => {
+  public getTopicsByTitle = async (req: Request, res: Response) => {
 
     try {
           const input = GetPostsByContentSchema.parse({
-            content: req.body.content,
+            title: req.body.title,
             token: req.headers.authorization
         })
 
-      const output = await this.postBusiness.getPostsByContent(input)
+      const output = await this.topicBusiness.getTopicsByTitle(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -61,7 +61,7 @@ export class PostController {
     }
   }
 
-  public getPostById = async (req: Request, res: Response) => {
+  public getTopicById = async (req: Request, res: Response) => {
 
     try {
           const input = GetPostByIdSchema.parse({
@@ -69,7 +69,7 @@ export class PostController {
             token: req.headers.authorization
         })
 
-      const output = await this.postBusiness.getPostById(input)
+      const output = await this.topicBusiness.getTopicById(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -85,7 +85,7 @@ export class PostController {
     }
   }
 
-  public getUserPosts = async (req: Request, res: Response) => {
+  public getUserTopics = async (req: Request, res: Response) => {
 
     try {
           const input = GetUserPostsSchema.parse({
@@ -93,7 +93,7 @@ export class PostController {
             token: req.headers.authorization
         })
 
-      const output = await this.postBusiness.getUserPosts(input)
+      const output = await this.topicBusiness.getUserTopics(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -110,14 +110,15 @@ export class PostController {
   }
 
 
-  public createPost = async (req: Request, res: Response) => {
+  public createTopic = async (req: Request, res: Response) => {
     try {
       const input = CreatePostSchema.parse({
+        title: req.body.title,
         content: req.body.content,
         token: req.headers.authorization
       })
 
-      const output = await this.postBusiness.createPost(input)
+      const output = await this.topicBusiness.createTopic(input)
 
       res.status(201).send(output)
     } catch (error) {
@@ -133,16 +134,17 @@ export class PostController {
     }
   }
 
-  public editPostById = async (req: Request, res: Response) => {
+  public editTopicByid = async (req: Request, res: Response) => {
     try {
 
       const input = EditPostSchema.parse({
         idToEdit: req.params.id,
+        title: req.body.title,
         content: req.body.content,
         token: req.headers.authorization
       })
 
-      const output = await this.postBusiness.editPost(input)
+      const output = await this.topicBusiness.editTopic(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -159,14 +161,14 @@ export class PostController {
   }
 
 
-  public deletePostById = async (req: Request, res: Response) => {
+  public deleteTopicById = async (req: Request, res: Response) => {
     try {
       const input = DeletePostSchema.parse({
         idToDelete: req.params.id,
         token: req.headers.authorization
       })
 
-      const output = await this.postBusiness.deletePost(input)
+      const output = await this.topicBusiness.deleteTopic(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -183,15 +185,15 @@ export class PostController {
   }
 
   
-  public likeOrDislikePost = async (req: Request, res: Response) => {
+  public likeOrDislikeTopic = async (req: Request, res: Response) => {
     try {
       const input = LikeOrDislikePostSchema.parse({
-        postId: req.params.id,
+        topicId: req.params.id,
         like: req.body.like,
         token: req.headers.authorization
       })
 
-      const output = await this.postBusiness.likeOrDislikePost(input)
+      const output = await this.topicBusiness.likeOrDislikeTopic(input)
 
       res.status(200).send(output)
     } catch (error) {

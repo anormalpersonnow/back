@@ -15,7 +15,7 @@ import { CreatePostInputDTO, CreatePostOutputDTO } from "../dtos/Posts/createPos
 import { DeletePostInputDTO, DeletePostOutputDTO } from "../dtos/Posts/deletePost.dto"
 import { LikeOrDislikePostInputDTO, LikeOrDislikePostOutputDTO } from "../dtos/Posts/likeOrDislike.dto"
 
-export class PostBusiness {
+export class TopicBusiness {
 
   constructor(
     private postDatabase: PostDatabase,
