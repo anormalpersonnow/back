@@ -12,7 +12,7 @@ export interface TopicDB {
 }
 
 export interface TopicDBWithCreator extends TopicDB{
-    creator_name: string
+    creator_username: string
 }
 
 export interface TopicModel {
@@ -25,7 +25,7 @@ export interface TopicModel {
     updated_at: string,
     creator: {
         id: string,
-        name: string
+        username: string
     }
 }
 
@@ -39,7 +39,7 @@ export class Topic {
         private createdAt: string,
         private updatedAt: string,
         private creatorId: string,
-        private creatorName: string
+        private creatorUsername: string
     ) { }
 
     public getId(): string {
@@ -122,12 +122,12 @@ export class Topic {
         this.creatorId = value
     }
 
-    public getCreatorName(): string {
-        return this.creatorName
+    public getCreatorUsername(): string {
+        return this.creatorUsername
     }
 
-    public setCreatorName(value: string): void {
-        this.creatorName = value
+    public setCreatorUsername(value: string): void {
+        this.creatorUsername = value
     }
 
 
@@ -155,7 +155,7 @@ export class Topic {
             updated_at: this.updatedAt,
             creator: {
                 id: this.creatorId,
-                name: this.creatorName
+                username: this.creatorUsername
             }
             }
         }

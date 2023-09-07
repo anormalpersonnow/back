@@ -1,6 +1,5 @@
-import { PostDatabase } from "../database/PostDataBase"
-import { Post, PostDB, PostModel } from "../models/Post"
-import { POST_LIKE, LikeOrDislikeDB } from "../models/LikePost"
+import { Topic, TopicDB, TopicModel } from "../models/Topic"
+import { TOPIC_LIKE, LikeOrDislikeDB } from "../models/LikeTopic"
 import { NotFoundError } from "../errors/NotFoundError"
 import { UnauthorizedError } from "../errors/UnauthorizedError"
 import { IdGenerator } from "../services/idGenerator"
@@ -14,21 +13,22 @@ import {
 import { CreatePostInputDTO, CreatePostOutputDTO } from "../dtos/Posts/createPost.dto"
 import { DeletePostInputDTO, DeletePostOutputDTO } from "../dtos/Posts/deletePost.dto"
 import { LikeOrDislikePostInputDTO, LikeOrDislikePostOutputDTO } from "../dtos/Posts/likeOrDislike.dto"
+import { TopicDatabase } from "../database/TopicDataBase"
 
 export class TopicBusiness {
 
   constructor(
-    private postDatabase: PostDatabase,
+    private topicDatabase: TopicDatabase,
     private idGenerator: IdGenerator,
     private tokenManager: TokenManager
   ) { }
 
 
-  public createPost = async (
+  public createTopic = async (
     input: CreatePostInputDTO
   ): Promise<CreatePostOutputDTO> => {
 
-    const { content, token } = input
+    const { title, content, token } = input
 
     const id = this.idGenerator.generate()
     const payload = this.tokenManager.getPayload(token)
@@ -37,8 +37,9 @@ export class TopicBusiness {
       throw new UnauthorizedError()
     }
 
-    const newPost = new Post(
+    const newTopic = new Topic(
       id,
+      title,
       content,
       0,
       0,
@@ -48,24 +49,25 @@ export class TopicBusiness {
       payload.username
     )
 
-    const newPostDB: PostDB = {
-      id: newPost.getId(),
-      creator_id: newPost.getCreatorId(),
-      content: newPost.getContent(),
-      likes: newPost.getLikes(),
-      dislikes: newPost.getDislikes(),
-      created_at: newPost.getCreatedAt(),
-      updated_at: newPost.getUpdatedAt(),
+    const newTopicDB: TopicDB = {
+      id: newTopic.getId(),
+      title: newTopic.getTitle(),
+      creator_id: newTopic.getCreatorId(),
+      content: newTopic.getContent(),
+      likes: newTopic.getLikes(),
+      dislikes: newTopic.getDislikes(),
+      created_at: newTopic.getCreatedAt(),
+      updated_at: newTopic.getUpdatedAt(),
     }
 
-    await this.postDatabase.createPost(newPostDB)
+    await this.topicDatabase.createTopic(newTopicDB)
 
     const output = undefined
 
     return output
   }
 
-  public getPosts = async (
+  public getTopics = async (
     input: GetPostsInputDTO
   ): Promise<GetPostsOutputDTO> => {
 
@@ -77,84 +79,87 @@ export class TopicBusiness {
       throw new UnauthorizedError()
     }
 
-    const postsDB = await this.postDatabase.getPosts()
+    const topicsDB = await this.topicDatabase.getTopics()
 
-    const posts = postsDB
-      .map((postWithCreator) => {
-        const post = new Post(
-          postWithCreator.id,
-          postWithCreator.content,
-          postWithCreator.likes,
-          postWithCreator.dislikes,
-          postWithCreator.created_at,
-          postWithCreator.updated_at,
-          postWithCreator.creator_id,
-          postWithCreator.creator_username
+    const topics = topicsDB
+      .map((topicWithCreator) => {
+        const topic = new Topic(
+          topicWithCreator.id,
+          topicWithCreator.title,
+          topicWithCreator.content,
+          topicWithCreator.likes,
+          topicWithCreator.dislikes,
+          topicWithCreator.created_at,
+          topicWithCreator.updated_at,
+          topicWithCreator.creator_id,
+          topicWithCreator.creator_username
         )
 
-        return post.toBusinessModel()
+        return topic.toBusinessModel()
       })
 
-    const output: GetPostsOutputDTO = posts
+    const output: GetPostsOutputDTO = topics
     return output
   }
 
-  public getPostsByContent = async (
+  public getTopicsByTitle = async (
     input: GetPostsByContentInputDTO
   ): Promise<GetPostsOutputDTO> => {
 
     const { content, token } = input
 
     const payload = this.tokenManager.getPayload(token)
-    const postsDB = await this.postDatabase.findPostByContent(content)
+    const postsDB = await this.topicDatabase.findTopicByTitle(content)
 
     if (!payload || payload === null) {
       throw new UnauthorizedError()
     }
 
-    const posts = postsDB
-      .map((postWithCreator) => {
-        const post = new Post(
-          postWithCreator.id,
-          postWithCreator.content,
-          postWithCreator.likes,
-          postWithCreator.dislikes,
-          postWithCreator.created_at,
-          postWithCreator.updated_at,
-          postWithCreator.creator_id,
-          postWithCreator.creator_username
+    const topics = postsDB
+      .map((topicWithCreator) => {
+        const topic = new Topic(
+          topicWithCreator.id,
+          topicWithCreator.title,
+          topicWithCreator.content,
+          topicWithCreator.likes,
+          topicWithCreator.dislikes,
+          topicWithCreator.created_at,
+          topicWithCreator.updated_at,
+          topicWithCreator.creator_id,
+          topicWithCreator.creator_username
         )
-        return post.toBusinessModel()
+        return topic.toBusinessModel()
       })
 
-    const output: GetPostsOutputDTO = posts
+    const output: GetPostsOutputDTO = topics
     return output
   }
 
-  public getUserPosts = async (
+  public getUserTopics = async (
     input: GetUserPostsInputDTO
   ): Promise<GetUserPostsOutputDTO> => {
 
     const { creatorId, token } = input
 
     const payload = this.tokenManager.getPayload(token)
-    const postsDB = await this.postDatabase.findUserPosts(creatorId)
+    const postsDB = await this.topicDatabase.findUserTopics(creatorId)
 
     if (!payload || payload === null) {
       throw new UnauthorizedError()
     }
 
     const posts = postsDB
-      .map((postWithCreator) => {
-        const post = new Post(
-          postWithCreator.id,
-          postWithCreator.content,
-          postWithCreator.likes,
-          postWithCreator.dislikes,
-          postWithCreator.created_at,
-          postWithCreator.updated_at,
-          postWithCreator.creator_id,
-          postWithCreator.creator_username
+      .map((topicWithCreator) => {
+        const post = new Topic(
+          topicWithCreator.id,
+          topicWithCreator.title,
+          topicWithCreator.content,
+          topicWithCreator.likes,
+          topicWithCreator.dislikes,
+          topicWithCreator.created_at,
+          topicWithCreator.updated_at,
+          topicWithCreator.creator_id,
+          topicWithCreator.creator_username
         )
         return post.toBusinessModel()
       })
@@ -163,35 +168,36 @@ export class TopicBusiness {
     return output
   }
 
-  public getPostById = async (
+  public getTopicById = async (
     input: GetPostByIdInputDTO
   ): Promise<GetSinglePostOutputDTO> => {
 
     const { id, token } = input
 
     const payload = this.tokenManager.getPayload(token)
-    const postDB = await this.postDatabase.findPostById(id)
+    const topicDB = await this.topicDatabase.findTopicById(id)
 
     if (!payload || payload === null) {
       throw new UnauthorizedError()
     }
 
-    const post = new Post(
-      postDB.id,
-      postDB.content,
-      postDB.likes,
-      postDB.dislikes,
-      postDB.created_at,
-      postDB.updated_at,
-      postDB.creator_id,
-      postDB.creator_username
+    const topic = new Topic(
+      topicDB.id,
+      topicDB.title,
+      topicDB.content,
+      topicDB.likes,
+      topicDB.dislikes,
+      topicDB.created_at,
+      topicDB.updated_at,
+      topicDB.creator_id,
+      topicDB.creator_username
     )
 
-    return post.toBusinessModel()
+    return topic.toBusinessModel()
 
   }
 
-  public editPost = async (
+  public editTopic = async (
     input: EditPostInputDTO
   ): Promise<EditPostOutputDTO> => {
 
@@ -211,59 +217,62 @@ export class TopicBusiness {
       throw new NotFoundError("Por favor, insira um id")
     }
 
-    const postToEditDB = await this.postDatabase.findPostById(idToEdit)
+    const topicToEditDB = await this.topicDatabase.findTopicById(idToEdit)
 
-    if (!postToEditDB) {
+    if (!topicToEditDB) {
       throw new NotFoundError("Post com suposto id não encontrado, insira um id válido")
     }
 
-    const post = new Post(
-      postToEditDB.id,
-      postToEditDB.content,
-      postToEditDB.likes,
-      postToEditDB.dislikes,
-      postToEditDB.created_at,
+    const topic = new Topic(
+      topicToEditDB.id,
+      topicToEditDB.title,
+      topicToEditDB.content,
+      topicToEditDB.likes,
+      topicToEditDB.dislikes,
+      topicToEditDB.created_at,
       new Date().toISOString(),
-      postToEditDB.creator_id,
-      postToEditDB.creator_username
+      topicToEditDB.creator_id,
+      topicToEditDB.creator_username
     )
 
 
-    content && post.setContent(content)
+    content && topic.setContent(content)
 
-    const updatePostDB: PostDB = {
-      id: post.getId(),
-      creator_id: post.getCreatorId(),
-      content: post.getContent(),
-      likes: post.getLikes(),
-      dislikes: post.getDislikes(),
-      created_at: post.getCreatedAt(),
-      updated_at: post.getUpdatedAt()
+    const updateTopicDB: TopicDB = {
+      id: topic.getId(),
+      title: topic.getTitle(),
+      creator_id: topic.getCreatorId(),
+      content: topic.getContent(),
+      likes: topic.getLikes(),
+      dislikes: topic.getDislikes(),
+      created_at: topic.getCreatedAt(),
+      updated_at: topic.getUpdatedAt()
     }
 
     if (payload.role === USER_ROLES.ADMIN) {
-      await this.postDatabase.updatePostById(idToEdit, updatePostDB)
-    } else if (postToEditDB.creator_id === payload.id) {
-      await this.postDatabase.updatePostById(idToEdit, updatePostDB)
+      await this.topicDatabase.updateTopicById(idToEdit, updateTopicDB)
+    } else if (topicToEditDB.creator_id === payload.id) {
+      await this.topicDatabase.updateTopicById(idToEdit, updateTopicDB)
     } else {
       throw new UnauthorizedError("Somente o administrador ou dono da postagem podem acessar este recurso.")
     }
 
     const output = {
-      content: post.getContent()
+      title: topic.getTitle(),
+      content: topic.getContent()
     }
 
     return output
 
   }
 
-  public deletePost = async (
+  public deleteTopic = async (
     input: DeletePostInputDTO
   ): Promise<DeletePostOutputDTO> => {
 
     const { idToDelete, token } = input
 
-    const postToDeleteDB = await this.postDatabase.findPostById(idToDelete)
+    const topicToDeleteDB = await this.topicDatabase.findTopicById(idToDelete)
     const payload = this.tokenManager.getPayload(token)
 
     if (!payload || payload === null) {
@@ -274,41 +283,42 @@ export class TopicBusiness {
       throw new NotFoundError("Por favor, insira um id")
     }
 
-    if (!postToDeleteDB) {
+    if (!topicToDeleteDB) {
       throw new NotFoundError("'ID' não encontrado")
     }
 
-    const post = new Post(
-      postToDeleteDB.id,
-      postToDeleteDB.content,
-      postToDeleteDB.likes,
-      postToDeleteDB.dislikes,
-      postToDeleteDB.created_at,
-      postToDeleteDB.updated_at,
-      postToDeleteDB.creator_id,
-      postToDeleteDB.creator_username,
+    const post = new Topic(
+      topicToDeleteDB.id,
+      topicToDeleteDB.title,
+      topicToDeleteDB.content,
+      topicToDeleteDB.likes,
+      topicToDeleteDB.dislikes,
+      topicToDeleteDB.created_at,
+      topicToDeleteDB.updated_at,
+      topicToDeleteDB.creator_id,
+      topicToDeleteDB.creator_username,
     )
 
     if (payload.role === USER_ROLES.ADMIN) {
-      await this.postDatabase.deletePostById(idToDelete)
-    } else if (postToDeleteDB.creator_id === payload.id) {
-      await this.postDatabase.deletePostById(idToDelete)
+      await this.topicDatabase.deleteTopicById(idToDelete)
+    } else if (topicToDeleteDB.creator_id === payload.id) {
+      await this.topicDatabase.deleteTopicById(idToDelete)
     } else {
-      throw new UnauthorizedError("Somente o administrador ou dono da postagem podem acessar este recurso.")
+      throw new UnauthorizedError("Somente o administrador ou dono do tópico podem acessar este recurso.")
     }
 
 
     const output = {
-      message: "Postagem deletada com sucesso",
+      message: "Tópico deletado com sucesso",
     }
     return output
   }
 
-  public likeOrDislikePost = async (
+  public likeOrDislikeTopic = async (
     input: LikeOrDislikePostInputDTO
   ): Promise<LikeOrDislikePostOutputDTO> => {
 
-    const { postId, like, token } = input
+    const { id, like, token } = input
 
     const payload = this.tokenManager.getPayload(token)
 
@@ -316,60 +326,61 @@ export class TopicBusiness {
       throw new UnauthorizedError()
     }
 
-    const postDBwithCreator = await this.postDatabase.findPostById(postId)
+    const topicDBwithCreator = await this.topicDatabase.findTopicById(id)
 
-    if (!postDBwithCreator) {
-      throw new NotFoundError("Post não encontrado")
+    if (!topicDBwithCreator) {
+      throw new NotFoundError("Tópico não encontrado")
     }
 
-    const post = new Post(
-      postDBwithCreator.id,
-      postDBwithCreator.content,
-      postDBwithCreator.likes,
-      postDBwithCreator.dislikes,
-      postDBwithCreator.created_at,
-      postDBwithCreator.updated_at,
-      postDBwithCreator.creator_id,
-      postDBwithCreator.creator_username,
+    const topic = new Topic(
+      topicDBwithCreator.id,
+      topicDBwithCreator.title,
+      topicDBwithCreator.content,
+      topicDBwithCreator.likes,
+      topicDBwithCreator.dislikes,
+      topicDBwithCreator.created_at,
+      topicDBwithCreator.updated_at,
+      topicDBwithCreator.creator_id,
+      topicDBwithCreator.creator_username,
     )
 
     const likeSQL = like ? 1 : 0
 
     const likeDislikeDB: LikeOrDislikeDB = {
       user_id: payload.id,
-      post_id: postId,
+      topic_id: id,
       like: likeSQL
     }
 
-    const likeDislikeExists = await this.postDatabase.findLikeOrDislike(likeDislikeDB)
+    const likeDislikeExists = await this.topicDatabase.findLikeOrDislike(likeDislikeDB)
 
-    if (likeDislikeExists === POST_LIKE.ALREADY_LIKED) {
+    if (likeDislikeExists === TOPIC_LIKE.ALREADY_LIKED) {
       if (like) {
-        await this.postDatabase.deleteLikeOrDislike(likeDislikeDB)
-        post.removeLike()
+        await this.topicDatabase.deleteLikeOrDislike(likeDislikeDB)
+        topic.removeLike()
       } else {
-        await this.postDatabase.updateLikeOrDislike(likeDislikeDB)
-        post.removeLike()
-        post.addDislike()
+        await this.topicDatabase.updateLikeOrDislike(likeDislikeDB)
+        topic.removeLike()
+        topic.addDislike()
       }
 
-    } else if (likeDislikeExists === POST_LIKE.ALREADY_DISLIKED) {
+    } else if (likeDislikeExists === TOPIC_LIKE.ALREADY_DISLIKED) {
       if (like === false) {
-        await this.postDatabase.deleteLikeOrDislike(likeDislikeDB)
-        post.removeDislike()
+        await this.topicDatabase.deleteLikeOrDislike(likeDislikeDB)
+        topic.removeDislike()
       } else {
-        await this.postDatabase.updateLikeOrDislike(likeDislikeDB)
-        post.removeDislike()
-        post.addLike()
+        await this.topicDatabase.updateLikeOrDislike(likeDislikeDB)
+        topic.removeDislike()
+        topic.addLike()
       }
 
     } else {
-      await this.postDatabase.insertLikeOrDislike(likeDislikeDB)
-      like ? post.addLike() : post.addDislike()
+      await this.topicDatabase.insertLikeOrDislike(likeDislikeDB)
+      like ? topic.addLike() : topic.addDislike()
     }
 
-    const updatedPostDB = post.toDBModel()
-    await this.postDatabase.updatePostById(updatedPostDB.id, updatedPostDB)
+    const updatedTopicDB = topic.toDBModel()
+    await this.topicDatabase.updateTopicById(updatedTopicDB.id, updatedTopicDB)
 
     const output: LikeOrDislikePostOutputDTO = undefined
 

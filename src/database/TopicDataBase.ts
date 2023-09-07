@@ -69,8 +69,8 @@ export class TopicDatabase extends BaseDatabase {
     return result as TopicDBWithCreator
   }
 
-  public findTopicByContent = async (
-    content: string
+  public findTopicByTitle = async (
+    title: string
   ): Promise<TopicDBWithCreator[]> => {
 
     const result = await BaseDatabase
@@ -91,7 +91,7 @@ export class TopicDatabase extends BaseDatabase {
         "=",
         `${UserDatabase.TABLE_USERS}.id`
       )
-      .where("content", "LIKE", `%${content}`)
+      .where("title", "LIKE", `%${title}`)
 
     return result as TopicDBWithCreator[]
   }
@@ -139,7 +139,7 @@ export class TopicDatabase extends BaseDatabase {
       .where({ id: idToEdit })
   }
 
-  public deletePostById = async (
+  public deleteTopicById = async (
     idToDelete: string
   ): Promise<void> => {
 
@@ -186,7 +186,7 @@ export class TopicDatabase extends BaseDatabase {
       .select()
       .where({
         user_id: likeOrDislikeDB.user_id,
-        post_id: likeOrDislikeDB.topic_id
+        topic_id: likeOrDislikeDB.topic_id
       })
 
     if (result === undefined) {
@@ -208,7 +208,7 @@ export class TopicDatabase extends BaseDatabase {
       .delete()
       .where({
         user_id: likeOrDislikeDB.user_id,
-        post_id: likeOrDislikeDB.topic_id
+        topic_id: likeOrDislikeDB.topic_id
       })
   }
 
@@ -221,7 +221,7 @@ export class TopicDatabase extends BaseDatabase {
       .update(likeOrDislikeDB)
       .where({
         user_id: likeOrDislikeDB.user_id,
-        post_id: likeOrDislikeDB.topic_id
+        topic_id: likeOrDislikeDB.topic_id
       })
   }
 
