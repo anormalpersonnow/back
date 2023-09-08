@@ -1,18 +1,18 @@
-import { Topic, TopicDB, TopicModel } from "../models/Topic"
+import { Topic, TopicDB } from "../models/Topic"
 import { TOPIC_LIKE, LikeOrDislikeDB } from "../models/LikeTopic"
 import { NotFoundError } from "../errors/NotFoundError"
 import { UnauthorizedError } from "../errors/UnauthorizedError"
 import { IdGenerator } from "../services/idGenerator"
 import { TokenManager } from "../services/TokenManager"
 import { USER_ROLES } from "../models/User"
-import { EditPostInputDTO, EditPostOutputDTO } from "../dtos/Posts/editPost.dto"
+import { EditTopicInputDTO, EditTopicOutputDTO } from "../dtos/Topics/editTopic.dto"
 import {
-  GetPostsInputDTO, GetPostsByContentInputDTO, GetPostByIdInputDTO, GetSinglePostOutputDTO,
-  GetPostsOutputDTO, GetUserPostsInputDTO, GetUserPostsOutputDTO,
-} from "../dtos/Posts/getPosts.dto"
-import { CreatePostInputDTO, CreatePostOutputDTO } from "../dtos/Posts/createPost.dto"
-import { DeletePostInputDTO, DeletePostOutputDTO } from "../dtos/Posts/deletePost.dto"
-import { LikeOrDislikePostInputDTO, LikeOrDislikePostOutputDTO } from "../dtos/Posts/likeOrDislike.dto"
+  GetTopicsInputDTO, GetTopicsByTitleInputDTO, GetTopicByIdInputDTO, GetSingleTopicOutputDTO,
+  GetTopicsOutputDTO, GetUserTopicsInputDTO, GetUserTopicsOutputDTO,
+} from "../dtos/Topics/getTopics.dto"
+import { CreateTopicInputDTO, CreateTopicOutputDTO } from "../dtos/Topics/createTopic.dto"
+import { DeleteTopicInputDTO, DeleteTopicOutputDTO } from "../dtos/Topics/deleteTopic.dto"
+import { LikeOrDislikeTopicInputDTO, LikeOrDislikeTopicOutputDTO } from "../dtos/Topics/likeOrDislike.dto"
 import { TopicDatabase } from "../database/TopicDataBase"
 
 export class TopicBusiness {
@@ -25,8 +25,8 @@ export class TopicBusiness {
 
 
   public createTopic = async (
-    input: CreatePostInputDTO
-  ): Promise<CreatePostOutputDTO> => {
+    input: CreateTopicInputDTO
+  ): Promise<CreateTopicOutputDTO> => {
 
     const { title, content, token } = input
 
@@ -68,8 +68,8 @@ export class TopicBusiness {
   }
 
   public getTopics = async (
-    input: GetPostsInputDTO
-  ): Promise<GetPostsOutputDTO> => {
+    input: GetTopicsInputDTO
+  ): Promise<GetTopicsOutputDTO> => {
 
     const { token } = input
 
@@ -98,18 +98,18 @@ export class TopicBusiness {
         return topic.toBusinessModel()
       })
 
-    const output: GetPostsOutputDTO = topics
+    const output: GetTopicsOutputDTO = topics
     return output
   }
 
   public getTopicsByTitle = async (
-    input: GetPostsByContentInputDTO
-  ): Promise<GetPostsOutputDTO> => {
+    input: GetTopicsByTitleInputDTO
+  ): Promise<GetTopicsOutputDTO> => {
 
-    const { content, token } = input
+    const { title, token } = input
 
     const payload = this.tokenManager.getPayload(token)
-    const postsDB = await this.topicDatabase.findTopicByTitle(content)
+    const postsDB = await this.topicDatabase.findTopicByTitle(title)
 
     if (!payload || payload === null) {
       throw new UnauthorizedError()
@@ -131,26 +131,26 @@ export class TopicBusiness {
         return topic.toBusinessModel()
       })
 
-    const output: GetPostsOutputDTO = topics
+    const output: GetTopicsOutputDTO = topics
     return output
   }
 
   public getUserTopics = async (
-    input: GetUserPostsInputDTO
-  ): Promise<GetUserPostsOutputDTO> => {
+    input: GetUserTopicsInputDTO
+  ): Promise<GetUserTopicsOutputDTO> => {
 
     const { creatorId, token } = input
 
     const payload = this.tokenManager.getPayload(token)
-    const postsDB = await this.topicDatabase.findUserTopics(creatorId)
+    const topicsDB = await this.topicDatabase.findUserTopics(creatorId)
 
     if (!payload || payload === null) {
       throw new UnauthorizedError()
     }
 
-    const posts = postsDB
+    const topics = topicsDB
       .map((topicWithCreator) => {
-        const post = new Topic(
+        const topic = new Topic(
           topicWithCreator.id,
           topicWithCreator.title,
           topicWithCreator.content,
@@ -161,16 +161,16 @@ export class TopicBusiness {
           topicWithCreator.creator_id,
           topicWithCreator.creator_username
         )
-        return post.toBusinessModel()
+        return topic.toBusinessModel()
       })
 
-    const output: GetPostsOutputDTO = posts
+    const output: GetTopicsOutputDTO = topics
     return output
   }
 
   public getTopicById = async (
-    input: GetPostByIdInputDTO
-  ): Promise<GetSinglePostOutputDTO> => {
+    input: GetTopicByIdInputDTO
+  ): Promise<GetSingleTopicOutputDTO> => {
 
     const { id, token } = input
 
@@ -198,11 +198,12 @@ export class TopicBusiness {
   }
 
   public editTopic = async (
-    input: EditPostInputDTO
-  ): Promise<EditPostOutputDTO> => {
+    input: EditTopicInputDTO
+  ): Promise<EditTopicOutputDTO> => {
 
     const {
       idToEdit,
+      title,
       content,
       token
     } = input
@@ -236,6 +237,7 @@ export class TopicBusiness {
     )
 
 
+    title && topic.setTitle(title)
     content && topic.setContent(content)
 
     const updateTopicDB: TopicDB = {
@@ -267,8 +269,8 @@ export class TopicBusiness {
   }
 
   public deleteTopic = async (
-    input: DeletePostInputDTO
-  ): Promise<DeletePostOutputDTO> => {
+    input: DeleteTopicInputDTO
+  ): Promise<DeleteTopicOutputDTO> => {
 
     const { idToDelete, token } = input
 
@@ -315,10 +317,10 @@ export class TopicBusiness {
   }
 
   public likeOrDislikeTopic = async (
-    input: LikeOrDislikePostInputDTO
-  ): Promise<LikeOrDislikePostOutputDTO> => {
+    input: LikeOrDislikeTopicInputDTO
+  ): Promise<LikeOrDislikeTopicOutputDTO> => {
 
-    const { id, like, token } = input
+    const { topicId, like, token } = input
 
     const payload = this.tokenManager.getPayload(token)
 
@@ -326,7 +328,7 @@ export class TopicBusiness {
       throw new UnauthorizedError()
     }
 
-    const topicDBwithCreator = await this.topicDatabase.findTopicById(id)
+    const topicDBwithCreator = await this.topicDatabase.findTopicById(topicId)
 
     if (!topicDBwithCreator) {
       throw new NotFoundError("Tópico não encontrado")
@@ -348,7 +350,7 @@ export class TopicBusiness {
 
     const likeDislikeDB: LikeOrDislikeDB = {
       user_id: payload.id,
-      topic_id: id,
+      topic_id: topicId,
       like: likeSQL
     }
 
@@ -382,7 +384,7 @@ export class TopicBusiness {
     const updatedTopicDB = topic.toDBModel()
     await this.topicDatabase.updateTopicById(updatedTopicDB.id, updatedTopicDB)
 
-    const output: LikeOrDislikePostOutputDTO = undefined
+    const output: LikeOrDislikeTopicOutputDTO = undefined
 
     return output
   }

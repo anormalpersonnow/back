@@ -1,5 +1,5 @@
 import { PostDatabase } from "../database/PostDataBase"
-import { Post, PostDB, PostModel } from "../models/Post"
+import { Post, PostDB } from "../models/Post"
 import { POST_LIKE, LikeOrDislikeDB } from "../models/LikePost"
 import { NotFoundError } from "../errors/NotFoundError"
 import { UnauthorizedError } from "../errors/UnauthorizedError"

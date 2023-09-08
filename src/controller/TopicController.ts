@@ -2,11 +2,11 @@ import { Request, Response } from "express"
 import { TopicBusiness } from "../business/TopicBusiness"
 import { BaseError } from "../errors/BaseError"
 import { ZodError } from "zod"
-import { EditPostSchema } from "../dtos/Posts/editPost.dto"
-import { GetPostsSchema, GetPostsByContentSchema, GetPostByIdSchema, GetUserPostsSchema } from "../dtos/Posts/getPosts.dto"
-import { CreatePostSchema } from "../dtos/Posts/createPost.dto"
-import { DeletePostSchema } from "../dtos/Posts/deletePost.dto"
-import { LikeOrDislikePostSchema } from "../dtos/Posts/likeOrDislike.dto"
+import { EditTopicSchema } from "../dtos/Topics/editTopic.dto"
+import { GetTopicsSchema, GetTopicsByTitleSchema, GetTopicByIdSchema, GetUserTopicsSchema } from "../dtos/Topics/getTopics.dto"
+import { CreateTopicSchema } from "../dtos/Topics/createTopic.dto"
+import { DeleteTopicSchema } from "../dtos/Topics/deleteTopic.dto"
+import { LikeOrDislikePostSchema } from "../dtos/Topics/likeOrDislike.dto"
 
 export class PostController {
 
@@ -16,7 +16,7 @@ export class PostController {
   public getTopics = async (req: Request, res: Response) => {
 
     try {
-          const input = GetPostsSchema.parse({
+          const input = GetTopicsSchema.parse({
             token: req.headers.authorization
         })
 
@@ -40,7 +40,7 @@ export class PostController {
   public getTopicsByTitle = async (req: Request, res: Response) => {
 
     try {
-          const input = GetPostsByContentSchema.parse({
+          const input = GetTopicsByTitleSchema.parse({
             title: req.body.title,
             token: req.headers.authorization
         })
@@ -64,7 +64,7 @@ export class PostController {
   public getTopicById = async (req: Request, res: Response) => {
 
     try {
-          const input = GetPostByIdSchema.parse({
+          const input = GetTopicByIdSchema.parse({
             id: req.params.id,
             token: req.headers.authorization
         })
@@ -88,7 +88,7 @@ export class PostController {
   public getUserTopics = async (req: Request, res: Response) => {
 
     try {
-          const input = GetUserPostsSchema.parse({
+          const input = GetUserTopicsSchema.parse({
             creatorId: req.params.id,
             token: req.headers.authorization
         })
@@ -112,7 +112,7 @@ export class PostController {
 
   public createTopic = async (req: Request, res: Response) => {
     try {
-      const input = CreatePostSchema.parse({
+      const input = CreateTopicSchema.parse({
         title: req.body.title,
         content: req.body.content,
         token: req.headers.authorization
@@ -137,7 +137,7 @@ export class PostController {
   public editTopicByid = async (req: Request, res: Response) => {
     try {
 
-      const input = EditPostSchema.parse({
+      const input = EditTopicSchema.parse({
         idToEdit: req.params.id,
         title: req.body.title,
         content: req.body.content,
@@ -163,7 +163,7 @@ export class PostController {
 
   public deleteTopicById = async (req: Request, res: Response) => {
     try {
-      const input = DeletePostSchema.parse({
+      const input = DeleteTopicSchema.parse({
         idToDelete: req.params.id,
         token: req.headers.authorization
       })

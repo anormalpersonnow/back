@@ -15,7 +15,6 @@ CREATE TABLE if NOT EXISTS topics(
     content TEXT NOT NULL,
     likes INTEGER NOT NULL,
     dislikes INTEGER NOT NULL,
-    posts REAL NOT NULL,
     created_at TEXT DEFAULT (DATETIME('now')) NOT NULL,
     FOREIGN KEY (creator_id) REFERENCES users(id)  
     ON UPDATE CASCADE
@@ -26,14 +25,14 @@ CREATE TABLE if NOT EXISTS topics(
 CREATE TABLE if NOT EXISTS posts(    
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
     creator_id TEXT NOT NULL,
-    topic TEXT NOT NULL,
+    topic_id TEXT NOT NULL,
     content TEXT NOT NULL,
     likes INTEGER NOT NULL,
     dislikes INTEGER NOT NULL,
     created_at TEXT DEFAULT (DATETIME('now')) NOT NULL ,
     updated_at TEXT DEFAULT (DATETIME('now')) NOT NULL,
     FOREIGN KEY (creator_id) REFERENCES users(id),  
-    FOREIGN KEY (topic) REFERENCES topics(title)
+    FOREIGN KEY (topic_id) REFERENCES topics(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE  
 );
