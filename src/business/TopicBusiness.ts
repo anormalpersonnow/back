@@ -289,18 +289,6 @@ export class TopicBusiness {
       throw new NotFoundError("'ID' não encontrado")
     }
 
-    const post = new Topic(
-      topicToDeleteDB.id,
-      topicToDeleteDB.title,
-      topicToDeleteDB.content,
-      topicToDeleteDB.likes,
-      topicToDeleteDB.dislikes,
-      topicToDeleteDB.created_at,
-      topicToDeleteDB.updated_at,
-      topicToDeleteDB.creator_id,
-      topicToDeleteDB.creator_username,
-    )
-
     if (payload.role === USER_ROLES.ADMIN) {
       await this.topicDatabase.deleteTopicById(idToDelete)
     } else if (topicToDeleteDB.creator_id === payload.id) {

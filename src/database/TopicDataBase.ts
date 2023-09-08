@@ -3,6 +3,7 @@ import { TopicDB, TopicDBWithCreator, TopicModel } from "../models/Topic";
 import { BaseDatabase } from "./BaseDatabase";
 import { UserDatabase } from "./UserDataBase";
 import { PostDatabase } from "./PostDataBase";
+import { PostModel } from "../models/Post";
 
 export class TopicDatabase extends BaseDatabase {
 
@@ -10,18 +11,18 @@ export class TopicDatabase extends BaseDatabase {
   public static TABLE_LIKES_DISLIKES = "like_dislikes_topics"
 
   public createTopic= async (
-    newPostDB: TopicDB
+    newTopicDB: TopicDB
   ): Promise<void> => {
 
     await BaseDatabase
-      .connection(PostDatabase.TABLE_POSTS)
-      .insert(newPostDB)
+      .connection(TopicDatabase.TABLE_TOPICS)
+      .insert(newTopicDB)
   }
 
   public getTopics = async (): Promise<TopicDBWithCreator[]> => {
 
     const result: Array<TopicDBWithCreator> = await BaseDatabase
-      .connection(PostDatabase.TABLE_POSTS)
+      .connection(TopicDatabase.TABLE_TOPICS)
       .select(
         `${TopicDatabase.TABLE_TOPICS}.id`,
         `${TopicDatabase.TABLE_TOPICS}.creator_id`,
@@ -47,7 +48,7 @@ export class TopicDatabase extends BaseDatabase {
   ): Promise<TopicDBWithCreator> => {
 
     const [result] = await BaseDatabase
-      .connection(PostDatabase.TABLE_POSTS)
+      .connection(TopicDatabase.TABLE_TOPICS)
       .select(
         `${TopicDatabase.TABLE_TOPICS}.id`,
         `${TopicDatabase.TABLE_TOPICS}.creator_id`,
@@ -74,7 +75,7 @@ export class TopicDatabase extends BaseDatabase {
   ): Promise<TopicDBWithCreator[]> => {
 
     const result = await BaseDatabase
-      .connection(PostDatabase.TABLE_POSTS)
+      .connection(TopicDatabase.TABLE_TOPICS)
       .select(
         `${TopicDatabase.TABLE_TOPICS}.id`,
         `${TopicDatabase.TABLE_TOPICS}.creator_id`,
@@ -182,7 +183,7 @@ export class TopicDatabase extends BaseDatabase {
   ): Promise<TOPIC_LIKE | undefined> => {
 
     const [result]: Array<LikeOrDislikeDB | undefined> = await BaseDatabase
-      .connection(PostDatabase.TABLE_LIKES_DISLIKES)
+      .connection(TopicDatabase.TABLE_LIKES_DISLIKES)
       .select()
       .where({
         user_id: likeOrDislikeDB.user_id,
@@ -233,5 +234,6 @@ export class TopicDatabase extends BaseDatabase {
       .connection(TopicDatabase.TABLE_LIKES_DISLIKES)
       .insert(likeOrDislikeDB)
   }
+  }
 
-}
+

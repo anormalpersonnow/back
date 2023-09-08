@@ -1,5 +1,3 @@
-import { PostModel } from "./Post"
-
 export interface TopicDB {
     id: string,
     title: string,
@@ -21,7 +19,6 @@ export interface TopicModel {
     content: string,
     likes: number,
     dislikes: number,
-    posts: PostModel[],
     created_at: string,
     updated_at: string,
     creator: {
@@ -37,7 +34,6 @@ export class Topic {
         private content: string,
         private likes: number,
         private dislikes: number,
-        private posts: PostModel[],
         private createdAt: string,
         private updatedAt: string,
         private creatorId: string,
@@ -99,17 +95,6 @@ export class Topic {
     public removeDislike = (): void => {
         this.dislikes--
     }
-
-    public insertPost = (value: PostModel):void => {
-        this.posts.push(value)
-    }
-
-    public removePost = (value: PostModel):void => {
-        
-        const newPostsArray = this.posts.filter(post => post.id !== value.id)
-        this.posts = newPostsArray
-    }
-
     public getCreatedAt(): string {
         return this.createdAt
     }
@@ -163,7 +148,6 @@ export class Topic {
             content: this.content,
             likes: this.likes,
             dislikes: this.dislikes,
-            posts: this.posts,
             created_at: this.createdAt,
             updated_at: this.updatedAt,
             creator: {
