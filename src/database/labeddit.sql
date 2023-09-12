@@ -8,10 +8,10 @@ CREATE TABLE if NOT EXISTS users(
     created_at TEXT DEFAULT (DATETIME('now')) NOT NULL 
 );
 
-CREATE TABLE if NOT EXISTS topics(
+
+CREATE TABLE if NOT EXISTS comments(
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
     creator_id TEXT NOT NULL,
-    title TEXT NOT NULL,
     content TEXT NOT NULL,
     likes INTEGER NOT NULL,
     dislikes INTEGER NOT NULL,
@@ -35,6 +35,7 @@ CREATE TABLE if NOT EXISTS posts(
     ON DELETE CASCADE  
 );
 
+
 CREATE TABLE if NOT EXISTS likes_dislikes_posts(    
     user_id TEXT UNIQUE NOT NULL,
     post_id TEXT UNIQUE NOT NULL,
@@ -45,12 +46,15 @@ CREATE TABLE if NOT EXISTS likes_dislikes_posts(
     ON DELETE CASCADE   
 );
 
-CREATE TABLE if NOT EXISTS likes_dislikes_topics(    
+CREATE TABLE if NOT EXISTS likes_dislikes_comments(    
     user_id TEXT UNIQUE NOT NULL,
-    topic_id TEXT UNIQUE NOT NULL,
+    comment_id TEXT UNIQUE NOT NULL,
     like INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id), 
-    FOREIGN KEY (topic_id) REFERENCES topics(id)  
+    FOREIGN KEY (comment_id) REFERENCES comments(id)  
     ON UPDATE CASCADE
     ON DELETE CASCADE   
 );
+
+
+

@@ -1,16 +1,16 @@
 export interface LikeOrDislikeDB {
     user_id: string,
-    topic_id: string,
+    comment_id: string,
     like: number
 }
 
 export interface LikeOrDislikeModel {
     user_id: string,
-    topic_id: string,
+    comment_id: string,
     like: number
 }
 
-export enum TOPIC_LIKE{
+export enum COMMENT_LIKE{
     ALREADY_LIKED = "ALREADY LIKED",
     ALREADY_DISLIKED = "ALREADY DISLIKED"
 }
@@ -18,7 +18,7 @@ export enum TOPIC_LIKE{
 export class LikeOrDislike {
     constructor(
         private userId: string,
-        private topicId: string,
+        private commentId: string,
         private like: number
     ) { }
 
@@ -30,12 +30,12 @@ export class LikeOrDislike {
         this.userId = value
     }
 
-    public getTopicId(): string {
-        return this.topicId
+    public getCommentId(): string {
+        return this.commentId
     }
 
-    public setTopicId(value: string): void {
-        this.topicId = value
+    public setCommentId(value: string): void {
+        this.commentId = value
     }
 
     public getLike(): number {
@@ -49,7 +49,7 @@ export class LikeOrDislike {
     public toDBModel(): LikeOrDislikeDB {
         return {
             user_id: this.userId,
-            topic_id: this.topicId,
+            comment_id: this.commentId,
             like: this.like
         }
     }
@@ -57,7 +57,7 @@ export class LikeOrDislike {
     public toBusinessModel(): LikeOrDislikeModel {
         return {
             user_id: this.userId,
-            topic_id: this.topicId,
+            comment_id: this.commentId,
             like: this.like
         }
     }

@@ -1,26 +1,26 @@
 import { Request, Response } from "express"
-import { TopicBusiness } from "../business/TopicBusiness"
+import { CommentBusiness } from "../business/CommentBusiness"
 import { BaseError } from "../errors/BaseError"
 import { ZodError } from "zod"
-import { EditTopicSchema } from "../dtos/Topics/editTopic.dto"
-import { GetTopicsSchema, GetTopicsByTitleSchema, GetTopicByIdSchema, GetUserTopicsSchema } from "../dtos/Topics/getTopics.dto"
-import { CreateTopicSchema } from "../dtos/Topics/createTopic.dto"
-import { DeleteTopicSchema } from "../dtos/Topics/deleteTopic.dto"
-import { LikeOrDislikePostSchema } from "../dtos/Topics/likeOrDislike.dto"
+import { EditCommentSchema } from "../dtos/Comments/editComment.dto"
+import { GetCommentsSchema, GetCommentsByContentSchema, GetCommentByIdSchema, GetUserCommentsSchema } from "../dtos/Comments/getComments.dto"
+import { CreateCommentSchema } from "../dtos/Comments/createComment.dto"
+import { DeleteCommentSchema } from "../dtos/Comments/deleteComment.dto"
+import { LikeOrDislikeCommentSchema } from "../dtos/Comments/likeOrDislike.dto"
 
-export class PostController {
+export class CommentController {
 
-  constructor(private topicBusiness: TopicBusiness) { }
+  constructor(private commentBusiness: CommentBusiness) { }
 
   
-  public getTopics = async (req: Request, res: Response) => {
+  public getComments = async (req: Request, res: Response) => {
 
     try {
-          const input = GetTopicsSchema.parse({
+          const input = GetCommentsSchema.parse({
             token: req.headers.authorization
         })
 
-      const output = await this.topicBusiness.getTopics(input)
+      const output = await this.commentBusiness.getComments(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -37,15 +37,15 @@ export class PostController {
   }
 
 
-  public getTopicsByTitle = async (req: Request, res: Response) => {
+  public getCommentsByContent= async (req: Request, res: Response) => {
 
     try {
-          const input = GetTopicsByTitleSchema.parse({
+          const input = GetCommentsByContentSchema.parse({
             title: req.body.title,
             token: req.headers.authorization
         })
 
-      const output = await this.topicBusiness.getTopicsByTitle(input)
+      const output = await this.commentBusiness.getCommentsByContent(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -61,15 +61,15 @@ export class PostController {
     }
   }
 
-  public getTopicById = async (req: Request, res: Response) => {
+  public getCommentById = async (req: Request, res: Response) => {
 
     try {
-          const input = GetTopicByIdSchema.parse({
+          const input = GetCommentByIdSchema.parse({
             id: req.params.id,
             token: req.headers.authorization
         })
 
-      const output = await this.topicBusiness.getTopicById(input)
+      const output = await this.commentBusiness.getCommentById(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -85,15 +85,15 @@ export class PostController {
     }
   }
 
-  public getUserTopics = async (req: Request, res: Response) => {
+  public getUserComments = async (req: Request, res: Response) => {
 
     try {
-          const input = GetUserTopicsSchema.parse({
+          const input = GetUserCommentsSchema.parse({
             creatorId: req.params.id,
             token: req.headers.authorization
         })
 
-      const output = await this.topicBusiness.getUserTopics(input)
+      const output = await this.commentBusiness.getUserComments(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -110,15 +110,15 @@ export class PostController {
   }
 
 
-  public createTopic = async (req: Request, res: Response) => {
+  public createComment = async (req: Request, res: Response) => {
     try {
-      const input = CreateTopicSchema.parse({
+      const input = CreateCommentSchema.parse({
         title: req.body.title,
         content: req.body.content,
         token: req.headers.authorization
       })
 
-      const output = await this.topicBusiness.createTopic(input)
+      const output = await this.commentBusiness.createComment(input)
 
       res.status(201).send(output)
     } catch (error) {
@@ -134,17 +134,17 @@ export class PostController {
     }
   }
 
-  public editTopicByid = async (req: Request, res: Response) => {
+  public editCommentByid = async (req: Request, res: Response) => {
     try {
 
-      const input = EditTopicSchema.parse({
+      const input = EditCommentSchema.parse({
         idToEdit: req.params.id,
         title: req.body.title,
         content: req.body.content,
         token: req.headers.authorization
       })
 
-      const output = await this.topicBusiness.editTopic(input)
+      const output = await this.commentBusiness.editComment(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -161,14 +161,14 @@ export class PostController {
   }
 
 
-  public deleteTopicById = async (req: Request, res: Response) => {
+  public deleteCommentById = async (req: Request, res: Response) => {
     try {
-      const input = DeleteTopicSchema.parse({
+      const input = DeleteCommentSchema.parse({
         idToDelete: req.params.id,
         token: req.headers.authorization
       })
 
-      const output = await this.topicBusiness.deleteTopic(input)
+      const output = await this.commentBusiness.deleteComment(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -185,15 +185,15 @@ export class PostController {
   }
 
   
-  public likeOrDislikeTopic = async (req: Request, res: Response) => {
+  public likeOrDislikeComment = async (req: Request, res: Response) => {
     try {
-      const input = LikeOrDislikePostSchema.parse({
+      const input = LikeOrDislikeCommentSchema.parse({
         id: req.params.id,
         like: req.body.like,
         token: req.headers.authorization
       })
 
-      const output = await this.topicBusiness.likeOrDislikeTopic(input)
+      const output = await this.commentBusiness.likeOrDislikeComment(input)
 
       res.status(200).send(output)
     } catch (error) {

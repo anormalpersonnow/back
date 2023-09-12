@@ -1,6 +1,5 @@
-export interface TopicDB {
+export interface CommentDB {
     id: string,
-    title: string,
     creator_id: string,
     content: string,
     likes: number,
@@ -9,13 +8,12 @@ export interface TopicDB {
     updated_at: string
 }
 
-export interface TopicDBWithCreator extends TopicDB{
+export interface CommentDBWithCreator extends CommentDB{
     creator_username: string
 }
 
-export interface TopicModel {
+export interface CommentModel {
     id: string,
-    title: string,
     content: string,
     likes: number,
     dislikes: number,
@@ -27,10 +25,9 @@ export interface TopicModel {
     }
 }
 
-export class Topic {
+export class Comment {
     constructor(
         private id: string,
-        private title: string,
         private content: string,
         private likes: number,
         private dislikes: number,
@@ -46,14 +43,6 @@ export class Topic {
 
     public setId(value: string): void {
         this.id = value
-    }
-
-    public getTitle(): string{
-        return this.title
-    }
-
-    public setTitle(value: string): void{
-        this.title = value
     }
 
     public getContent(): string {
@@ -128,10 +117,9 @@ export class Topic {
     }
 
 
-    public toDBModel(): TopicDB {
+    public toDBModel(): CommentDB {
         return {
             id: this.id,
-            title: this.title,
             creator_id: this.creatorId,
             content: this.content,
             likes: this.likes,
@@ -141,10 +129,9 @@ export class Topic {
         }
     }
 
-    public toBusinessModel(): TopicModel {
+    public toBusinessModel(): CommentModel {
         return {
             id: this.id,
-            title: this.title,
             content: this.content,
             likes: this.likes,
             dislikes: this.dislikes,
