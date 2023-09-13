@@ -1,6 +1,5 @@
 import { UserDatabase } from "../database/UserDataBase"
 import { UserDB, User } from "../models/User"
-import { NotFoundError } from "../errors/NotFoundError"
 import { BadRequestError } from "../errors/BadRequestError"
 import { UnauthorizedError } from "../errors/UnauthorizedError"
 import { TokenManager } from "../services/TokenManager"
@@ -81,9 +80,6 @@ export class UserBusiness {
     const { email, password } = input
 
     const userDB = await this.userDatabase.findUserByEmail(email)
-    if (!userDB) {
-      throw new NotFoundError("'Email' não encontrado")
-    }
 
     const hashedPassword = userDB.password
     const isPasswordCorrect = await this.hashManager.compare(password, hashedPassword)
@@ -109,7 +105,7 @@ export class UserBusiness {
     input: GetUsersInputDTO
   ): Promise<GetUsersOutputDTO> => {
 
-    const { username, token } = input
+    const { token } = input
     const payload = this.tokenManager.getPayload(token)
 
     if (!payload || payload === null) {
@@ -134,7 +130,7 @@ export class UserBusiness {
     return output
   }
 
-  public getUserByName = async (
+  public getUserByUsername = async (
     input: GetUsersInputDTO
   ): Promise<GetUsersOutputDTO> => {
 
@@ -146,6 +142,7 @@ export class UserBusiness {
     }
 
     const userFoundDB = await this.userDatabase.findUserByUsername(username)
+    
 
     const users = userFoundDB.map((userDB) => {
       const user = new User(
@@ -181,10 +178,6 @@ export class UserBusiness {
 
     if (!payload || payload === null) {
       throw new UnauthorizedError()
-    }
-
-    if (!userToEditDB) {
-      throw new NotFoundError("'ID' para editar não existe")
     }
 
     const user = new User(
@@ -246,10 +239,6 @@ export class UserBusiness {
       throw new UnauthorizedError()
     }
 
-    if (!userToEditDB) {
-      throw new NotFoundError("'ID' para editar não existe")
-    }
-
     const user = new User(
       userToEditDB.id,
       userToEditDB.username,
@@ -298,14 +287,6 @@ export class UserBusiness {
 
     if (!payload || payload === null) {
       throw new UnauthorizedError()
-    }
-
-    if (!idToDelete) {
-      throw new NotFoundError("Por favor, insira um id")
-    }
-
-    if (!userToDeleteDB) {
-      throw new NotFoundError("'ID' não existente em nosso banco.")
     }
 
     if (payload.role === USER_ROLES.ADMIN) {

@@ -55,6 +55,3 @@ CREATE TABLE if NOT EXISTS likes_dislikes_comments(
     ON UPDATE CASCADE
     ON DELETE CASCADE   
 );
-
-
-
