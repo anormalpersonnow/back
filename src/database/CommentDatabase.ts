@@ -1,15 +1,14 @@
 import { LikeOrDislikeDB, COMMENT_LIKE } from "../models/LikeComment";
-import { CommentDB, CommentDBWithCreator, CommentModel } from "../models/Comment";
-import { BaseDatabase } from "./BaseDatabase";
+import { CommentDB, CommentDBWithCreator } from "../models/Comment";
+import { BaseDatabase } from "./BaseDataBase";
 import { UserDatabase } from "./UserDataBase";
-import { PostDatabase } from "./PostDataBase";
 
 export class CommentDatabase extends BaseDatabase {
 
   public static TABLE_COMMENTS = "comments";
   public static TABLE_LIKES_DISLIKES = "like_dislike_comments"
 
-  public createComment= async (
+  public insertComment = async (
     newCommentDB: CommentDB
   ): Promise<void> => {
 
@@ -18,28 +17,59 @@ export class CommentDatabase extends BaseDatabase {
       .insert(newCommentDB)
   }
 
-  public getComments = async (): Promise<CommentDBWithCreator[]> => {
+  public findComments = async (
+    q: string | undefined
+  ): Promise<CommentDBWithCreator[]> => {
 
-    const result: Array<CommentDBWithCreator> = await BaseDatabase
-      .connection(CommentDatabase.TABLE_COMMENTS)
-      .select(
-        `${CommentDatabase.TABLE_COMMENTS}.id`,
-        `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
-        `${CommentDatabase.TABLE_COMMENTS}.content`,
-        `${CommentDatabase.TABLE_COMMENTS}.likes`,
-        `${CommentDatabase.TABLE_COMMENTS}.dislikes`,
-        `${CommentDatabase.TABLE_COMMENTS}.created_at`,
-        `${CommentDatabase.TABLE_COMMENTS}.updated_at`,
-        `${UserDatabase.TABLE_USERS}.username as creator_username`
-      )
-      .join(
-        `${UserDatabase.TABLE_USERS}`,
-        `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
-        "=",
-        `${UserDatabase.TABLE_USERS}.id`
-      )
+    let commentsDB;
 
-    return result 
+    if (q) {
+      const result: Array<CommentDBWithCreator> = await BaseDatabase
+        .connection(CommentDatabase.TABLE_COMMENTS)
+        .select(
+          `${CommentDatabase.TABLE_COMMENTS}.id`,
+          `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
+          `${CommentDatabase.TABLE_COMMENTS}.content`,
+          `${CommentDatabase.TABLE_COMMENTS}.likes`,
+          `${CommentDatabase.TABLE_COMMENTS}.dislikes`,
+          `${CommentDatabase.TABLE_COMMENTS}.created_at`,
+          `${CommentDatabase.TABLE_COMMENTS}.updated_at`,
+          `${UserDatabase.TABLE_USERS}.username as creator_username`
+        )
+        .join(
+          `${UserDatabase.TABLE_USERS}`,
+          `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
+          "=",
+          `${UserDatabase.TABLE_USERS}.id`
+        ).where(`${CommentDatabase.TABLE_COMMENTS}.content`, "LIKE", `%${q}%`)
+
+      commentsDB = result
+
+    } else {
+      const result: Array<CommentDBWithCreator> = await BaseDatabase
+        .connection(CommentDatabase.TABLE_COMMENTS)
+        .select(
+          `${CommentDatabase.TABLE_COMMENTS}.id`,
+          `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
+          `${CommentDatabase.TABLE_COMMENTS}.content`,
+          `${CommentDatabase.TABLE_COMMENTS}.likes`,
+          `${CommentDatabase.TABLE_COMMENTS}.dislikes`,
+          `${CommentDatabase.TABLE_COMMENTS}.created_at`,
+          `${CommentDatabase.TABLE_COMMENTS}.updated_at`,
+          `${UserDatabase.TABLE_USERS}.username as creator_username`
+        )
+        .join(
+          `${UserDatabase.TABLE_USERS}`,
+          `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
+          "=",
+          `${UserDatabase.TABLE_USERS}.id`
+        )
+
+      commentsDB = result
+    }
+
+    return commentsDB
+
   }
 
   public findCommentById = async (
@@ -69,33 +99,6 @@ export class CommentDatabase extends BaseDatabase {
     return result as CommentDBWithCreator
   }
 
-  public findCommentByContent = async (
-    content: string
-  ): Promise<CommentDBWithCreator[]> => {
-
-    const result = await BaseDatabase
-      .connection(CommentDatabase.TABLE_COMMENTS)
-      .select(
-        `${CommentDatabase.TABLE_COMMENTS}.id`,
-        `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
-        `${CommentDatabase.TABLE_COMMENTS}.content`,
-        `${CommentDatabase.TABLE_COMMENTS}.likes`,
-        `${CommentDatabase.TABLE_COMMENTS}.dislikes`,
-        `${CommentDatabase.TABLE_COMMENTS}.created_at`,
-        `${CommentDatabase.TABLE_COMMENTS}.updated_at`,
-        `${CommentDatabase.TABLE_COMMENTS}.username as creator_username`
-      )
-      .join(
-        `${UserDatabase.TABLE_USERS}`,
-        `${PostDatabase.TABLE_POSTS}.creator_id`,
-        "=",
-        `${UserDatabase.TABLE_USERS}.id`
-      )
-      .where("content", "LIKE", `%${content}`)
-
-    return result as CommentDBWithCreator[]
-  }
-
   public findCommentCreatorById = async (
     id: string
   ): Promise<CommentDBWithCreator | undefined> => {
@@ -116,17 +119,6 @@ export class CommentDatabase extends BaseDatabase {
       ).where({ creator_id: id })
 
     return result as CommentDBWithCreator | undefined
-  }
-
-  public findUserComments = async (
-    creatorId: string
-  ): Promise<CommentDBWithCreator[]> => {
-
-    const postDB: Array<CommentDBWithCreator> = await BaseDatabase
-      .connection(CommentDatabase.TABLE_COMMENTS)
-      .where({ creator_id: creatorId })
-
-    return postDB
   }
 
   public updateCommentById = async (
@@ -152,7 +144,7 @@ export class CommentDatabase extends BaseDatabase {
 
   public likeOrDislikeComment = async (
     id: string
-  ): Promise<CommentModel | undefined> => {
+  ): Promise<CommentDBWithCreator | undefined> => {
 
     const [result] = await BaseDatabase
       .connection(CommentDatabase.TABLE_COMMENTS)
@@ -173,7 +165,7 @@ export class CommentDatabase extends BaseDatabase {
         `${UserDatabase.TABLE_USERS}.id`
       ).where({ [`${CommentDatabase.TABLE_COMMENTS}.id`]: id })
 
-    return result as CommentModel | undefined
+    return result as CommentDBWithCreator | undefined
   }
 
 
@@ -233,6 +225,6 @@ export class CommentDatabase extends BaseDatabase {
       .connection(CommentDatabase.TABLE_LIKES_DISLIKES)
       .insert(likeOrDislikeDB)
   }
-  }
+}
 
 

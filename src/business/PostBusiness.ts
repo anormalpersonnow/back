@@ -7,10 +7,7 @@ import { IdGenerator } from "../services/idGenerator"
 import { TokenManager } from "../services/TokenManager"
 import { USER_ROLES } from "../models/User"
 import { EditPostInputDTO, EditPostOutputDTO } from "../dtos/Posts/editPost.dto"
-import {
-  GetPostsInputDTO, GetPostsByContentInputDTO, GetPostByIdInputDTO, GetSinglePostOutputDTO,
-  GetPostsOutputDTO, GetUserPostsInputDTO, GetUserPostsOutputDTO,
-} from "../dtos/Posts/getPosts.dto"
+import {GetPostsInputDTO, GetPostsOutputDTO} from "../dtos/Posts/getPosts.dto"
 import { CreatePostInputDTO, CreatePostOutputDTO } from "../dtos/Posts/createPost.dto"
 import { DeletePostInputDTO, DeletePostOutputDTO } from "../dtos/Posts/deletePost.dto"
 import { LikeOrDislikePostInputDTO, LikeOrDislikePostOutputDTO } from "../dtos/Posts/likeOrDislike.dto"
@@ -58,7 +55,7 @@ export class PostBusiness {
       updated_at: newPost.getUpdatedAt(),
     }
 
-    await this.postDatabase.createPost(newPostDB)
+    await this.postDatabase.insertPost(newPostDB)
 
     const output = undefined
 
@@ -69,7 +66,7 @@ export class PostBusiness {
     input: GetPostsInputDTO
   ): Promise<GetPostsOutputDTO> => {
 
-    const { token } = input
+    const { content, token } = input
 
     const payload = this.tokenManager.getPayload(token)
 
@@ -77,7 +74,7 @@ export class PostBusiness {
       throw new UnauthorizedError()
     }
 
-    const postsDB = await this.postDatabase.getPosts()
+    let postsDB = await this.postDatabase.findPosts(content)
 
     const posts = postsDB
       .map((postWithCreator) => {
@@ -97,98 +94,6 @@ export class PostBusiness {
 
     const output: GetPostsOutputDTO = posts
     return output
-  }
-
-  public getPostsByContent = async (
-    input: GetPostsByContentInputDTO
-  ): Promise<GetPostsOutputDTO> => {
-
-    const { content, token } = input
-
-    const payload = this.tokenManager.getPayload(token)
-    const postsDB = await this.postDatabase.findPostByContent(content)
-
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
-    }
-
-    const posts = postsDB
-      .map((postWithCreator) => {
-        const post = new Post(
-          postWithCreator.id,
-          postWithCreator.content,
-          postWithCreator.likes,
-          postWithCreator.dislikes,
-          postWithCreator.created_at,
-          postWithCreator.updated_at,
-          postWithCreator.creator_id,
-          postWithCreator.creator_username
-        )
-        return post.toBusinessModel()
-      })
-
-    const output: GetPostsOutputDTO = posts
-    return output
-  }
-
-  public getUserPosts = async (
-    input: GetUserPostsInputDTO
-  ): Promise<GetUserPostsOutputDTO> => {
-
-    const { creatorId, token } = input
-
-    const payload = this.tokenManager.getPayload(token)
-    const postsDB = await this.postDatabase.findUserPosts(creatorId)
-
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
-    }
-
-    const posts = postsDB
-      .map((postWithCreator) => {
-        const post = new Post(
-          postWithCreator.id,
-          postWithCreator.content,
-          postWithCreator.likes,
-          postWithCreator.dislikes,
-          postWithCreator.created_at,
-          postWithCreator.updated_at,
-          postWithCreator.creator_id,
-          postWithCreator.creator_username
-        )
-        return post.toBusinessModel()
-      })
-
-    const output: GetPostsOutputDTO = posts
-    return output
-  }
-
-  public getPostById = async (
-    input: GetPostByIdInputDTO
-  ): Promise<GetSinglePostOutputDTO> => {
-
-    const { id, token } = input
-
-    const payload = this.tokenManager.getPayload(token)
-    const postDB = await this.postDatabase.findPostById(id)
-
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
-    }
-
-    const post = new Post(
-      postDB.id,
-      postDB.content,
-      postDB.likes,
-      postDB.dislikes,
-      postDB.created_at,
-      postDB.updated_at,
-      postDB.creator_id,
-      postDB.creator_username
-    )
-
-    return post.toBusinessModel()
-
   }
 
   public editPost = async (

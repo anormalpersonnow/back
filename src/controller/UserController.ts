@@ -17,40 +17,11 @@ export class UserController {
   public getUsers = async (req: Request, res: Response) => {
     try {
       const input = GetUsersSchema.parse({
+        username: req.query.username,
         token: req.headers.authorization
       })
 
       const output = await this.userBusiness.getUsers(input)
-
-      if (output.length < 1) {
-        res.statusCode = 400
-        throw new NotFoundError()
-      }
-
-      res.status(200).send(output)
-
-    } catch (error) {
-      console.log(error)
-
-      if (error instanceof ZodError) {
-        res.status(400).send(error.issues)
-      } else if (error instanceof BaseError) {
-        res.status(error.statusCode).send(error.message)
-      } else {
-        res.status(500).send("Erro inesperado")
-      }
-    }
-  }
-
-
-  public getUserByUsername = async (req: Request, res: Response) => {
-    try {
-      const input = GetUsersSchema.parse({
-        username: req.params.username,
-        token: req.headers.authorization
-      })
-
-      const output = await this.userBusiness.getUserByUsername(input)
 
       if (output.length < 1) {
         res.statusCode = 400
@@ -121,7 +92,7 @@ export class UserController {
     }
   }
 
-  public editUserById = async (req: Request, res: Response) => {
+  public editUser = async (req: Request, res: Response) => {
     try {
 
       const input = EditUserSchema.parse({
@@ -155,7 +126,7 @@ export class UserController {
   }
 
 
-  public deleteUserById = async (req: Request, res: Response) => {
+  public deleteUser = async (req: Request, res: Response) => {
     try {
 
       const input = DeleteUserSchema.parse({
@@ -183,7 +154,7 @@ export class UserController {
     }
   }
 
-  public editUserRoleById = async (req: Request, res: Response) => {
+  public editUserRole = async (req: Request, res: Response) => {
     try {
 
       const input = ChangeUserRoleSchema.parse({

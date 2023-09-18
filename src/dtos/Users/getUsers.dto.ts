@@ -2,11 +2,11 @@ import z from "zod"
 import { UserModel } from "../../models/User"
 
 export interface GetUsersInputDTO {
-  username: string,
+  username?: string,
   token: string 
 }
 
-export type GetUsersOutputDTO = UserModel[]
+export type GetUsersOutputDTO = UserModel[] | UserModel
 
 export const GetUsersSchema = z.object({
   username: z.string().min(1).optional(),

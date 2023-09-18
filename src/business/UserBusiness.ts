@@ -31,7 +31,7 @@ export class UserBusiness {
     const id = this.idGenerator.generate()
     const hashedPassword = await this.hashManager.hash(password)
     const userDBExists = await this.userDatabase.findUserById(id)
-    const users = await this.userDatabase.getUsers()
+    const users = await this.userDatabase.findUsers(username)
 
     if (userDBExists) {
       throw new Error("'ID' já existe")
@@ -105,35 +105,6 @@ export class UserBusiness {
     input: GetUsersInputDTO
   ): Promise<GetUsersOutputDTO> => {
 
-    const { token } = input
-    const payload = this.tokenManager.getPayload(token)
-
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
-    }
-
-    const userFoundDB = await this.userDatabase.getUsers()
-
-    const users = userFoundDB.map((userDB) => {
-      const user = new User(
-        userDB.id,
-        userDB.username,
-        userDB.email,
-        userDB.password,
-        userDB.role,
-        userDB.created_at
-      )
-      return user.toBusinessModel()
-    })
-
-    const output: GetUsersOutputDTO = users
-    return output
-  }
-
-  public getUserByUsername = async (
-    input: GetUsersInputDTO
-  ): Promise<GetUsersOutputDTO> => {
-
     const { username, token } = input
     const payload = this.tokenManager.getPayload(token)
 
@@ -141,10 +112,10 @@ export class UserBusiness {
       throw new UnauthorizedError()
     }
 
-    const userFoundDB = await this.userDatabase.findUserByUsername(username)
-    
+    let userFoundDB = await this.userDatabase.findUsers(username)
 
-    const users = userFoundDB.map((userDB) => {
+    const users = userFoundDB
+    .map((userDB) => {
       const user = new User(
         userDB.id,
         userDB.username,
@@ -209,11 +180,7 @@ export class UserBusiness {
     await this.userDatabase.updateUserById(idToEdit, updatedUserDB)
 
     const output = {
-      message: "Usuário editado com sucesso",
-      username: user.getUsername(),
-      email: user.getEmail(),
-      password: user.getPassword(),
-      role: user.getRole(),
+      message: "Usuário editado com sucesso"
     }
 
     return output
@@ -248,10 +215,6 @@ export class UserBusiness {
       userToEditDB.created_at
     )
 
-    if (payload.id !== idToEdit) {
-      throw new UnauthorizedError("Somente o administrador ou o dono da conta pode executar essa ação.")
-    }
-
     role && user.setRole(role)
 
     const updatedUserDB: UserDB = {
@@ -263,7 +226,13 @@ export class UserBusiness {
       created_at: user.getCreatedAt()
     }
 
-    await this.userDatabase.updateUserRoleById(idToEdit, updatedUserDB)
+    if (payload.role === USER_ROLES.ADMIN) {
+      await this.userDatabase.updateUserRoleById(idToEdit, updatedUserDB)
+    } else if (userToEditDB.id === idToEdit) {
+      await this.userDatabase.updateUserRoleById(idToEdit, updatedUserDB)
+    } else {
+      throw new UnauthorizedError("Somente o administrador ou o dono da conta pode executar essa ação.")
+    }
 
     const output = {
       id: user.getId(),

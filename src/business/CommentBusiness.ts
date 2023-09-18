@@ -1,4 +1,5 @@
 import { Comment, CommentDB } from "../models/Comment"
+import { CommentDatabase } from "../database/CommentDataBase"
 import { COMMENT_LIKE, LikeOrDislikeDB } from "../models/LikeComment"
 import { NotFoundError } from "../errors/NotFoundError"
 import { UnauthorizedError } from "../errors/UnauthorizedError"
@@ -6,14 +7,11 @@ import { IdGenerator } from "../services/idGenerator"
 import { TokenManager } from "../services/TokenManager"
 import { USER_ROLES } from "../models/User"
 import { EditCommentInputDTO, EditCommentOutputDTO } from "../dtos/Comments/editComment.dto"
-import {
-  GetCommentsInputDTO, GetCommentsByContentInputDTO, GetCommentByIdInputDTO, GetSingleCommentOutputDTO,
-  GetCommentsOutputDTO, GetUserCommentsInputDTO, GetUserCommentsOutputDTO,
-} from "../dtos/Comments/getComments.dto"
+import {GetCommentsInputDTO, GetCommentsOutputDTO} from "../dtos/Comments/getComments.dto"
 import { CreateCommentInputDTO, CreateCommentOutputDTO } from "../dtos/Comments/createComment.dto"
 import { DeleteCommentInputDTO, DeleteCommentOutputDTO } from "../dtos/Comments/deleteComment.dto"
 import { LikeOrDislikeCommentInputDTO, LikeOrDislikeCommentOutputDTO } from "../dtos/Comments/likeOrDislike.dto"
-import { CommentDatabase } from "../database/CommentDatabase"
+
 
 export class CommentBusiness {
 
@@ -23,6 +21,39 @@ export class CommentBusiness {
     private tokenManager: TokenManager
   ) { }
 
+
+  public getComments = async (
+    input: GetCommentsInputDTO
+  ): Promise<GetCommentsOutputDTO> => {
+
+    const { content, token } = input
+    const payload = this.tokenManager.getPayload(token)
+
+    if (!payload) {
+      throw new UnauthorizedError()
+    }
+
+    let CommentsDB = await this.CommentDatabase.findComments(content)
+
+    const Comments = CommentsDB
+      .map((CommentWithCreator) => {
+        const comment = new Comment(
+          CommentWithCreator.id,
+          CommentWithCreator.content,
+          CommentWithCreator.likes,
+          CommentWithCreator.dislikes,
+          CommentWithCreator.created_at,
+          CommentWithCreator.updated_at,
+          CommentWithCreator.creator_id,
+          CommentWithCreator.creator_username
+        )
+
+        return comment.toBusinessModel()
+      })
+
+    const output: GetCommentsOutputDTO = Comments
+    return output
+  }
 
   public createComment = async (
     input: CreateCommentInputDTO
@@ -58,137 +89,11 @@ export class CommentBusiness {
       updated_at: newComment.getUpdatedAt(),
     }
 
-    await this.CommentDatabase.createComment(newCommentDB)
+    await this.CommentDatabase.insertComment(newCommentDB)
 
     const output = undefined
 
     return output
-  }
-
-  public getComments = async (
-    input: GetCommentsInputDTO
-  ): Promise<GetCommentsOutputDTO> => {
-
-    const { token } = input
-
-    const payload = this.tokenManager.getPayload(token)
-
-    if (!payload) {
-      throw new UnauthorizedError()
-    }
-
-    const CommentsDB = await this.CommentDatabase.getComments()
-
-    const Comments = CommentsDB
-      .map((CommentWithCreator) => {
-        const comment = new Comment(
-          CommentWithCreator.id,
-          CommentWithCreator.content,
-          CommentWithCreator.likes,
-          CommentWithCreator.dislikes,
-          CommentWithCreator.created_at,
-          CommentWithCreator.updated_at,
-          CommentWithCreator.creator_id,
-          CommentWithCreator.creator_username
-        )
-
-        return comment.toBusinessModel()
-      })
-
-    const output: GetCommentsOutputDTO = Comments
-    return output
-  }
-
-  public getCommentsByContent = async (
-    input: GetCommentsByContentInputDTO
-  ): Promise<GetCommentsOutputDTO> => {
-
-    const { content, token } = input
-
-    const payload = this.tokenManager.getPayload(token)
-    const postsDB = await this.CommentDatabase.findCommentByContent(content)
-
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
-    }
-
-    const Comments = postsDB
-      .map((CommentWithCreator) => {
-        const comment = new Comment(
-          CommentWithCreator.id,
-          CommentWithCreator.content,
-          CommentWithCreator.likes,
-          CommentWithCreator.dislikes,
-          CommentWithCreator.created_at,
-          CommentWithCreator.updated_at,
-          CommentWithCreator.creator_id,
-          CommentWithCreator.creator_username
-        )
-        return comment.toBusinessModel()
-      })
-
-    const output: GetCommentsOutputDTO = Comments
-    return output
-  }
-
-  public getUserComments = async (
-    input: GetUserCommentsInputDTO
-  ): Promise<GetUserCommentsOutputDTO> => {
-
-    const { creatorId, token } = input
-
-    const payload = this.tokenManager.getPayload(token)
-    const CommentsDB = await this.CommentDatabase.findUserComments(creatorId)
-
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
-    }
-
-    const Comments = CommentsDB
-      .map((CommentWithCreator) => {
-        const comment = new Comment(
-          CommentWithCreator.id,
-          CommentWithCreator.content,
-          CommentWithCreator.likes,
-          CommentWithCreator.dislikes,
-          CommentWithCreator.created_at,
-          CommentWithCreator.updated_at,
-          CommentWithCreator.creator_id,
-          CommentWithCreator.creator_username
-        )
-        return comment.toBusinessModel()
-      })
-
-    const output: GetCommentsOutputDTO = Comments
-    return output
-  }
-
-  public getCommentById = async (
-    input: GetCommentByIdInputDTO
-  ): Promise<GetSingleCommentOutputDTO> => {
-
-    const { id, token } = input
-
-    const payload = this.tokenManager.getPayload(token)
-    const CommentDB = await this.CommentDatabase.findCommentById(id)
-
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
-    }
-
-    const comment = new Comment(
-      CommentDB.id,
-      CommentDB.content,
-      CommentDB.likes,
-      CommentDB.dislikes,
-      CommentDB.created_at,
-      CommentDB.updated_at,
-      CommentDB.creator_id,
-      CommentDB.creator_username
-    )
-
-    return comment.toBusinessModel()
-
   }
 
   public editComment = async (
@@ -214,7 +119,7 @@ export class CommentBusiness {
     const CommentToEditDB = await this.CommentDatabase.findCommentById(idToEdit)
 
     if (!CommentToEditDB) {
-      throw new NotFoundError("Post com suposto id não encontrado, insira um id válido")
+      throw new NotFoundError("Comentário com suposto id não encontrado, insira um id válido")
     }
 
     const comment = new Comment(
@@ -288,7 +193,7 @@ export class CommentBusiness {
 
 
     const output = {
-      message: "Tópico deletado com sucesso",
+      message: "Comentário deletado com sucesso",
     }
     return output
   }
@@ -308,7 +213,7 @@ export class CommentBusiness {
     const CommentDBwithCreator = await this.CommentDatabase.findCommentById(commentId)
 
     if (!CommentDBwithCreator) {
-      throw new NotFoundError("Tópico não encontrado")
+      throw new NotFoundError("Comentário não encontrado")
     }
 
     const comment = new Comment(

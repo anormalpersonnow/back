@@ -12,11 +12,17 @@ export interface UserDB {
     created_at: string
 }
 
+export interface TokenPayload {
+    id: string,
+    username: string,
+    role: USER_ROLES
+  }
+
+  
 export interface UserModel {
     id: string,
     username: string,
     email: string,
-    password: string,
     role: USER_ROLES,
     createdAt: string
 }
@@ -96,7 +102,6 @@ export class User {
             id: this.id,
             username: this.username,
             email: this.email,
-            password: this.password,
             role: this.role,
             createdAt: this.createdAt
         }

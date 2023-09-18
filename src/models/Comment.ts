@@ -17,8 +17,8 @@ export interface CommentModel {
     content: string,
     likes: number,
     dislikes: number,
-    created_at: string,
-    updated_at: string,
+    createdAt: string,
+    updatedAt: string,
     creator: {
         id: string,
         username: string
@@ -135,8 +135,8 @@ export class Comment {
             content: this.content,
             likes: this.likes,
             dislikes: this.dislikes,
-            created_at: this.createdAt,
-            updated_at: this.updatedAt,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
             creator: {
                 id: this.creatorId,
                 username: this.creatorUsername

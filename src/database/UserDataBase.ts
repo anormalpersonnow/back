@@ -1,38 +1,48 @@
 import { UserDB } from "../models/User";
-import { BaseDatabase } from "./BaseDatabase";
+import { BaseDatabase } from "./BaseDataBase";
 
 export class UserDatabase extends BaseDatabase {
-  
+
   public static TABLE_USERS = "users"
 
-  public insertUser = async (input: UserDB):Promise<void> => {
+  public insertUser = async (
+    input: UserDB
+  ): Promise<void> => {
     await BaseDatabase
       .connection(UserDatabase.TABLE_USERS)
       .insert(input)
   }
 
-  
-  public getUsers = async () => {
 
+  public findUsers = async (
+    q: string | undefined
+  ): Promise<UserDB[]> => {
+
+    let usersDB
+
+    if (q) {
       const result: UserDB[] = await BaseDatabase
         .connection(UserDatabase.TABLE_USERS)
         .select()
+        .where("username", "LIKE", `%${q}%`)
+      
+        usersDB = result
 
-      return result
+    } else {
+      const result: UserDB[] = await BaseDatabase
+        .connection(UserDatabase.TABLE_USERS)
+        .select()
+        
+      usersDB = result
+    }
 
+    return usersDB
   }
 
-  public findUserByUsername = async (username: string) => {
-    const userDB = await BaseDatabase
-      .connection(UserDatabase.TABLE_USERS)
-      .select()
-      .where({ username })
-
-    return userDB
-  }
-
-  public findUserById = async (id: string) => {
-    const [userDB]: UserDB[]= await BaseDatabase
+  public findUserById = async (
+    id: string
+  ): Promise<UserDB> => {
+    const [userDB]: UserDB[] = await BaseDatabase
       .connection(UserDatabase.TABLE_USERS)
       .select()
       .where({ id })
@@ -40,7 +50,9 @@ export class UserDatabase extends BaseDatabase {
     return userDB
   }
 
-  public findUserByEmail = async (email: string) => {
+  public findUserByEmail = async (
+    email: string
+  ): Promise<UserDB> => {
     const [userDB]: UserDB[] = await BaseDatabase
       .connection(UserDatabase.TABLE_USERS)
       .select()
@@ -49,24 +61,32 @@ export class UserDatabase extends BaseDatabase {
     return userDB
   }
 
-  public updateUserById = async (id: string, userDB: UserDB) => {
+  public updateUserById = async (
+    id: string, userDB: UserDB
+  ): Promise<void> => {
     await BaseDatabase
       .connection(UserDatabase.TABLE_USERS)
       .update(userDB)
       .where({ id })
   }
 
-  public deleteUserById = async (id: string) => {
+  public updateUserRoleById = async (
+    id: string, userDB: UserDB
+  ): Promise<void> => {
+    await BaseDatabase
+      .connection(UserDatabase.TABLE_USERS)
+      .update(userDB)
+      .where({ id })
+  }
+
+  public deleteUserById = async (
+    id: string
+  ): Promise<void> => {
     await BaseDatabase
       .connection(UserDatabase.TABLE_USERS)
       .delete()
       .where({ id })
   }
 
-  public updateUserRoleById = async (id: string, userDB: UserDB) => {
-    await BaseDatabase
-      .connection(UserDatabase.TABLE_USERS)
-      .update(userDB)
-      .where({ id })
-  }
+
 }
