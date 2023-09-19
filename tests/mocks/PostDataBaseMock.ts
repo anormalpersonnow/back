@@ -8,7 +8,7 @@ const postsMock: PostDB[] = [
     id: "post01",
     creator_id: "id-mock-fulano",
     content: "Primeiro post",
-    likes: 1,
+    likes: 0,
     dislikes: 0, 
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
@@ -17,7 +17,7 @@ const postsMock: PostDB[] = [
     id: "post02",
     creator_id: "id-mock-astrodev",
     content: "Segundo post",
-    likes: 1,
+    likes: 0,
     dislikes: 0, 
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
@@ -30,7 +30,7 @@ const postsWithCreatorMock: PostDBWithCreator[] = [
     id: "post01",
     creator_id: "id-mock-fulano",
     content: "Primeiro post",
-    likes: 1,
+    likes: 0,
     dislikes: 0, 
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -40,7 +40,7 @@ const postsWithCreatorMock: PostDBWithCreator[] = [
     id: "post02",
     creator_id: "id-mock-astrodev",
     content: "Segundo post",
-    likes: 1,
+    likes: 0,
     dislikes: 0, 
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -48,18 +48,7 @@ const postsWithCreatorMock: PostDBWithCreator[] = [
   },
 ]
 
-const likesMock: LikeOrDislikeDB[] = [
-  {
-    user_id: "id-mock-fulano",
-    post_id: "post02",
-    like: 1
-  },
-  {
-    user_id: "id-mock-astrodev",
-    post_id: "post01",
-    like: 1
-  },
-]
+const likesMock: LikeOrDislikeDB[] = []
 
 export class PostDatabaseMock extends BaseDatabase {
 

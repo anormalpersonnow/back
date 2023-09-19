@@ -1,10 +1,10 @@
-import { UserBusiness } from "../../../src/business/UserBusiness"
 import { ZodError } from "zod"
+import { UserBusiness } from '../../../src/business/UserBusiness'
 import { EditUserSchema } from "../../../src/dtos/Users/editUser.dto"
-import { HashManagerMock } from "../../mocks/HashManagerMock"
-import { IdGeneratorMock } from "../../mocks/IdGeneratorMock"
-import { TokenManagerMock } from "../../mocks/TokenManagerMock"
-import { UserDatabaseMock } from "../../mocks/UserDatabaseMock"
+import { HashManagerMock } from "../../../tests/mocks/HashManagerMock"
+import { IdGeneratorMock } from "../../../tests/mocks/IdGeneratorMock"
+import { TokenManagerMock } from "../../../tests/mocks/TokenManagerMock"
+import { UserDatabaseMock } from "../../../tests/mocks/UserDatabaseMock"
 
 describe("Testando editUser", () => {
   const userBusiness = new UserBusiness(

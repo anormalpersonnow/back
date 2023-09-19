@@ -6,7 +6,10 @@ export interface LikeOrDislikePostInputDTO {
     token: string
 }
 
-export type LikeOrDislikePostOutputDTO = undefined
+export type LikeOrDislikePostOutputDTO = {
+    likes: number,
+    dislikes: number
+}
 
 export const LikeOrDislikePostSchema = z.object({
     postId: z.string().min(1),

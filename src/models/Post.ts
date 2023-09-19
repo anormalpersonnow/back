@@ -75,6 +75,9 @@ export class Post {
 
     public removeLike = (): void => {
         this.likes--
+        if(this.likes === 0) {
+            this.likes = 0
+        }
     }
 
     public addDislike = (): void => {
@@ -83,6 +86,9 @@ export class Post {
 
     public removeDislike = (): void => {
         this.dislikes--
+        if(this.dislikes === 0) {
+            this.dislikes = 0
+        }
     }
 
     public getCreatedAt(): string {

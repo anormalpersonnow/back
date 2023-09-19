@@ -1,5 +1,5 @@
-import { UserBusiness } from "../../../src/business/UserBusiness"
 import { ZodError } from "zod"
+import { UserBusiness } from "../../../src/business/UserBusiness"
 import { GetUsersSchema } from "../../../src/dtos/Users/getUsers.dto"
 import { USER_ROLES } from "../../../src/models/User"
 import { HashManagerMock } from "../../mocks/HashManagerMock"

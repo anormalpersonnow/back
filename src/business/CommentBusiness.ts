@@ -265,7 +265,10 @@ export class CommentBusiness {
     const updatedCommentDB = comment.toDBModel()
     await this.CommentDatabase.updateCommentById(updatedCommentDB.id, updatedCommentDB)
 
-    const output: LikeOrDislikeCommentOutputDTO = undefined
+    const output: LikeOrDislikeCommentOutputDTO = {
+      likes: comment.getLikes(),
+      dislikes: comment.getDislikes()
+    }
 
     return output
   }

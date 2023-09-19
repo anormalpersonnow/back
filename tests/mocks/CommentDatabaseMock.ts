@@ -9,7 +9,7 @@ const commentsMock: CommentDB[] = [
     id: "comment01",
     creator_id: "id-mock-fulano",
     content: "Primeiro comentário",
-    likes: 1,
+    likes: 0,
     dislikes: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
@@ -18,7 +18,7 @@ const commentsMock: CommentDB[] = [
     id: "comment02",
     creator_id: "id-mock-astrodev",
     content: "Segundo comentário",
-    likes: 1,
+    likes: 0,
     dislikes: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
@@ -31,7 +31,7 @@ const commentsWithCreatorMock: CommentDBWithCreator[] = [
     id: "comment01",
     creator_id: "id-mock-fulano",
     content: "Fulano comentário",
-    likes: 1,
+    likes: 0,
     dislikes: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -41,7 +41,7 @@ const commentsWithCreatorMock: CommentDBWithCreator[] = [
     id: "comment02",
     creator_id: "id-mock-astrodev",
     content: "Astrodev comentário",
-    likes: 1,
+    likes: 0,
     dislikes: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -49,18 +49,7 @@ const commentsWithCreatorMock: CommentDBWithCreator[] = [
   },
 ]
 
-const likesMock: LikeOrDislikeDB[] = [
-  {
-    user_id: "id-mock-fulano",
-    comment_id: "comment02",
-    like: 1
-  },
-  {
-    user_id: "id-mock-astrodev",
-    comment_id: "comment01",
-    like: 1
-  },
-]
+const likesMock: LikeOrDislikeDB[] = []
 
 export class CommentDatabaseMock extends BaseDatabase {
 

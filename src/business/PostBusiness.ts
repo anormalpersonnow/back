@@ -265,7 +265,10 @@ export class PostBusiness {
     const updatedPostDB = post.toDBModel()
     await this.postDatabase.updatePostById(updatedPostDB.id, updatedPostDB)
 
-    const output: LikeOrDislikePostOutputDTO = undefined
+    const output: LikeOrDislikePostOutputDTO = {
+      likes: post.getLikes(),
+      dislikes: post.getDislikes()
+    }
 
     return output
   }
