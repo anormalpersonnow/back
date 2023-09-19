@@ -1,3 +1,4 @@
+import { ZodError } from "zod"
 import { UserBusiness } from "../../../src/business/UserBusiness"
 import { SignupSchema } from "../../../src/dtos/Users/signup.dto"
 import { HashManagerMock } from "../../mocks/HashManagerMock"
@@ -26,4 +27,105 @@ describe("Testando signup", () => {
       token: "token-mock"
     })
   })
+
+     
+  test("deve disparar erro caso o input obrigatório username tenha outro nome", async () => {
+    try {
+      const input = SignupSchema.parse({
+        name: "id-mock-fulano",
+        email: "fulano@email.com",
+        password: "senha1"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("username: Required")
+    }
+  }
+  })
+  
+  
+  test("deve disparar erro caso o input obrigatório email tenha outro nome", async () => {
+    try {
+      const input = SignupSchema.parse({
+        username: "id-mock-fulano",
+        userEmail: "fulano@email.com",
+        password: "senha1"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("email: Required")
+    }
+  }
+  })
+
+  test("deve disparar erro caso o input obrigatório password tenha outro nome", async () => {
+    try {
+      const input = SignupSchema.parse({
+        username: "id-mock-fulano",
+        email: "fulano@email.com",
+        senha: "token-mock-astrodev"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("password: Required")
+    }
+  }
+  })
+
+  test("deve disparar erro na ausência de username", async () => {
+    try {
+      const input = SignupSchema.parse({
+      username: "",
+      email: "ciclana@email.com",
+      password: "cc"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("username: String must contain at least 2 character(s)")
+    }
+  }
+  })
+
+  test("deve disparar erro na ausência de email", async () => {
+    try {
+      const input = SignupSchema.parse({
+      username: "Samuel",
+      email: "",
+      password: "senha1"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("email: String must contain at least 11 character(s)")
+    }
+  }
+  })
+
+  test("deve disparar erro quando o email informado não possuir @", async () => {
+    try {
+      const input = SignupSchema.parse({
+      username: "Samuel",
+      email: "samuelemail.com",
+      password: "senha1"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("email: Invalid input: must include \"@\"")
+    }
+  }
+  })
+
+  test("deve disparar erro na ausência de senha ou quando a mesma tiver menos de seis caracteres", async () => {
+    try {
+      const input = SignupSchema.parse({
+      username: "Samuel",
+      email: "samuel@email.com",
+      password: "senha"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("password: String must contain at least 6 character(s)")
+    }
+  }
+  })
+
 })

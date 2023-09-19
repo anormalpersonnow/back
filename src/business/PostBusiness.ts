@@ -7,7 +7,7 @@ import { IdGenerator } from "../services/idGenerator"
 import { TokenManager } from "../services/TokenManager"
 import { USER_ROLES } from "../models/User"
 import { EditPostInputDTO, EditPostOutputDTO } from "../dtos/Posts/editPost.dto"
-import {GetPostsInputDTO, GetPostsOutputDTO} from "../dtos/Posts/getPosts.dto"
+import { GetPostsInputDTO, GetPostsOutputDTO } from "../dtos/Posts/getPosts.dto"
 import { CreatePostInputDTO, CreatePostOutputDTO } from "../dtos/Posts/createPost.dto"
 import { DeletePostInputDTO, DeletePostOutputDTO } from "../dtos/Posts/deletePost.dto"
 import { LikeOrDislikePostInputDTO, LikeOrDislikePostOutputDTO } from "../dtos/Posts/likeOrDislike.dto"
@@ -30,8 +30,8 @@ export class PostBusiness {
     const id = this.idGenerator.generate()
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     const newPost = new Post(
@@ -70,10 +70,10 @@ export class PostBusiness {
 
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
-
+    
     let postsDB = await this.postDatabase.findPosts(content)
 
     const posts = postsDB
@@ -108,8 +108,8 @@ export class PostBusiness {
 
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     if (!idToEdit) {
@@ -171,8 +171,8 @@ export class PostBusiness {
     const postToDeleteDB = await this.postDatabase.findPostById(idToDelete)
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     if (!idToDelete) {
@@ -206,8 +206,8 @@ export class PostBusiness {
 
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     const postDBwithCreator = await this.postDatabase.findPostById(postId)

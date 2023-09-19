@@ -27,7 +27,7 @@ export class PostController {
       console.log(error)
 
       if (error instanceof ZodError) {
-        res.status(400).send(error.issues)
+        res.status(400).send(`${error.issues[0].path}: ${error.issues[0].message}`)
       } else if (error instanceof BaseError) {
         res.status(error.statusCode).send(error.message)
       } else {
@@ -50,7 +50,7 @@ export class PostController {
       console.log(error)
 
       if (error instanceof ZodError) {
-        res.status(400).send(error.issues)
+        res.status(400).send(`${error.issues[0].path}: ${error.issues[0].message}`)
       } else if (error instanceof BaseError) {
         res.status(error.statusCode).send(error.message)
       } else {
@@ -75,7 +75,7 @@ export class PostController {
       console.log(error)
 
       if (error instanceof ZodError) {
-        res.status(400).send(error.issues)
+        res.status(400).send(`${error.issues[0].path}: ${error.issues[0].message}`)
       } else if (error instanceof BaseError) {
         res.status(error.statusCode).send(error.message)
       } else {
@@ -99,7 +99,7 @@ export class PostController {
       console.log(error)
 
       if (error instanceof ZodError) {
-        res.status(400).send(error.issues)
+        res.status(400).send(`${error.issues[0].path}: ${error.issues[0].message}`)
       } else if (error instanceof BaseError) {
         res.status(error.statusCode).send(error.message)
       } else {
@@ -124,7 +124,7 @@ export class PostController {
       console.log(error)
 
       if (error instanceof ZodError) {
-        res.status(400).send(error.issues)
+        res.status(400).send(`${error.issues[0].path}: ${error.issues[0].message}`)
       } else if (error instanceof BaseError) {
         res.status(error.statusCode).send(error.message)
       } else {

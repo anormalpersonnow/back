@@ -29,8 +29,8 @@ export class CommentBusiness {
     const { content, token } = input
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     let CommentsDB = await this.CommentDatabase.findComments(content)
@@ -64,8 +64,8 @@ export class CommentBusiness {
     const id = this.idGenerator.generate()
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     const newComment = new Comment(
@@ -108,8 +108,8 @@ export class CommentBusiness {
 
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     if (!idToEdit) {
@@ -171,8 +171,8 @@ export class CommentBusiness {
     const CommentToDeleteDB = await this.CommentDatabase.findCommentById(idToDelete)
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     if (!idToDelete) {
@@ -206,8 +206,8 @@ export class CommentBusiness {
 
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     const CommentDBwithCreator = await this.CommentDatabase.findCommentById(commentId)

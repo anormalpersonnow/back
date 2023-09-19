@@ -1,4 +1,5 @@
 import { UserBusiness } from "../../../src/business/UserBusiness"
+import { ZodError } from "zod"
 import { DeleteUserSchema } from "../../../src/dtos/Users/deleteUser.dto"
 import { HashManagerMock } from "../../mocks/HashManagerMock"
 import { IdGeneratorMock } from "../../mocks/IdGeneratorMock"
@@ -25,4 +26,31 @@ describe("Testando deleteUser", () => {
       message: "Usuário deletado com sucesso"
     })
   })
+
+  test("deve disparar erro na ausência do idToDelete", async () => {
+    try {
+      const input = DeleteUserSchema.parse({
+      idToDelete: "",
+      token: "token-mock-fulano"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("idToDelete: String must contain at least 1 character(s)")
+    }
+  }
+  })
+
+  test("deve disparar erro na ausência do token", async () => {
+    try {
+      const input = DeleteUserSchema.parse({
+      idToDelete: "id-mock-fulano",
+      token: ""
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("token: String must contain at least 1 character(s)")
+    }
+  }
+  })
+
 })

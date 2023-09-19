@@ -108,8 +108,8 @@ export class UserBusiness {
     const { username, token } = input
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     let userFoundDB = await this.userDatabase.findUsers(username)
@@ -147,8 +147,8 @@ export class UserBusiness {
 
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     const user = new User(
@@ -193,17 +193,17 @@ export class UserBusiness {
   ): Promise<ChangeUserRoleOutputDTO> => {
 
     const {
-      idToEdit,
+      id,
       role,
       token
     } = input
 
-    const userToEditDB = await this.userDatabase.findUserById(idToEdit)
+    const userToEditDB = await this.userDatabase.findUserById(id)
 
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     const user = new User(
@@ -227,9 +227,9 @@ export class UserBusiness {
     }
 
     if (payload.role === USER_ROLES.ADMIN) {
-      await this.userDatabase.updateUserRoleById(idToEdit, updatedUserDB)
-    } else if (userToEditDB.id === idToEdit) {
-      await this.userDatabase.updateUserRoleById(idToEdit, updatedUserDB)
+      await this.userDatabase.updateUserRoleById(id, updatedUserDB)
+    } else if (userToEditDB.id === id) {
+      await this.userDatabase.updateUserRoleById(id, updatedUserDB)
     } else {
       throw new UnauthorizedError("Somente o administrador ou o dono da conta pode executar essa ação.")
     }
@@ -254,8 +254,8 @@ export class UserBusiness {
 
     const payload = this.tokenManager.getPayload(token)
 
-    if (!payload || payload === null) {
-      throw new UnauthorizedError()
+    if (payload === null) {
+      throw new UnauthorizedError("Token inválido")
     }
 
     if (payload.role === USER_ROLES.ADMIN) {

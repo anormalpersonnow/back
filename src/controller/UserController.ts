@@ -23,7 +23,7 @@ export class UserController {
 
       const output = await this.userBusiness.getUsers(input)
 
-      if (output.length < 1) {
+      if (!output) {
         res.statusCode = 400
         throw new NotFoundError()
       }
@@ -34,7 +34,7 @@ export class UserController {
       console.log(error)
 
       if (error instanceof ZodError) {
-        res.status(400).send(error.issues)
+        res.status(400).send(`${error.issues[0].path}: ${error.issues[0].message}`)
       } else if (error instanceof BaseError) {
         res.status(error.statusCode).send(error.message)
       } else {
@@ -59,7 +59,7 @@ export class UserController {
       console.log(error)
 
       if (error instanceof ZodError) {
-        res.status(400).send(error.issues)
+        res.status(400).send(`${error.issues[0].path}: ${error.issues[0].message}`)
       } else if (error instanceof BaseError) {
         res.status(error.statusCode).send(error.message)
       } else {
@@ -83,7 +83,7 @@ export class UserController {
       console.log(error)
 
       if (error instanceof ZodError) {
-        res.status(400).send(error.issues)
+        res.status(400).send(`${error.issues[0].path}: ${error.issues[0].message}`)
       } else if (error instanceof BaseError) {
         res.status(error.statusCode).send(error.message)
       } else {
@@ -116,7 +116,7 @@ export class UserController {
       console.log(error)
 
       if (error instanceof ZodError) {
-        res.status(400).send(error.issues)
+        res.status(400).send(`${error.issues[0].path}: ${error.issues[0].message}`)
       } else if (error instanceof BaseError) {
         res.status(error.statusCode).send(error.message)
       } else {
@@ -146,7 +146,9 @@ export class UserController {
     } catch (error) {
       console.log(error)
 
-      if (error instanceof BaseError) {
+      if (error instanceof ZodError) {
+        res.status(400).send(`${error.issues[0].path}: ${error.issues[0].message}`)
+      } else if (error instanceof BaseError) {
         res.status(error.statusCode).send(error.message)
       } else {
         res.status(500).send("Erro inesperado")
@@ -175,7 +177,7 @@ export class UserController {
       console.log(error)
 
       if (error instanceof ZodError) {
-        res.status(400).send(error.issues)
+        res.status(400).send(`${error.issues[0].path}: ${error.issues[0].message}`)
       } else if (error instanceof BaseError) {
         res.status(error.statusCode).send(error.message)
       } else {

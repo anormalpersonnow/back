@@ -1,4 +1,5 @@
 import { UserBusiness } from "../../../src/business/UserBusiness"
+import { ZodError } from "zod"
 import { GetUsersSchema } from "../../../src/dtos/Users/getUsers.dto"
 import { USER_ROLES } from "../../../src/models/User"
 import { HashManagerMock } from "../../mocks/HashManagerMock"
@@ -59,6 +60,18 @@ describe("Testando getUsers", () => {
         role: USER_ROLES.NORMAL
       }
     ])
+  })
+
+  test("deve disparar erro na ausência do token no Schema", async () => {
+    try {
+      const input = GetUsersSchema.parse({
+      token: ""
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("token: String must contain at least 1 character(s)")
+    }
+  }
   })
 
 })
