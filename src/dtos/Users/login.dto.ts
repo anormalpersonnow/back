@@ -1,4 +1,5 @@
 import z from "zod"
+import { USER_ROLES } from "../../models/User"
 
 export interface LoginInputDTO {
   email: string,
@@ -6,6 +7,10 @@ export interface LoginInputDTO {
 }
 
 export interface LoginOutputDTO {
+  id: string,
+  username: string,
+  email: string,
+  role: USER_ROLES,
   token: string
 }
 

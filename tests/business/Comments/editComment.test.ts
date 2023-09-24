@@ -4,12 +4,14 @@ import { ZodError } from "zod"
 import { IdGeneratorMock } from "../../mocks/IdGeneratorMock"
 import { TokenManagerMock } from "../../mocks/TokenManagerMock"
 import { CommentDatabaseMock } from "../../mocks/CommentDatabaseMock"
+import { PostDatabaseMock } from "../../mocks/PostDataBaseMock"
 
 describe("Testando create comment", () => {
   const comentBusiness = new CommentBusiness(
     new CommentDatabaseMock(),
     new IdGeneratorMock(),
-    new TokenManagerMock()
+    new TokenManagerMock(),
+    new PostDatabaseMock()
   )
 
   test("deve editar dados do usuário pelo ID", async () => {
@@ -54,7 +56,35 @@ describe("Testando create comment", () => {
   }
   })
 
-  test("deve disparar erro quando o campo content não for criado", async () => {
+  test("deve disparar erro na ausência de token", async () => {
+    try {
+      const input = EditCommentSchema.parse({
+        idToEdit: "comment01",
+        content: "Fulano comentário editado",
+        token: ""
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("token: String must contain at least 1 character(s)")
+    }
+  }
+  })
+
+  
+  test("deve disparar erro na ausência do input content", async () => {
+    try {
+      const input = EditCommentSchema.parse({
+        idToEdit: "comment01",
+        token: "token-mock-fulano"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("content: Required")
+    }
+  }
+  })
+  
+  test("deve disparar erro na ausência do input content", async () => {
     try {
       const input = EditCommentSchema.parse({
         idToEdit: "comment01",
@@ -67,16 +97,15 @@ describe("Testando create comment", () => {
   }
   })
 
-  test("deve disparar erro na ausência de token", async () => {
+  test("deve disparar erro na ausência do input token", async () => {
     try {
       const input = EditCommentSchema.parse({
         idToEdit: "comment01",
-        content: "Fulano comentário editado",
-        token: ""
+        content: "Fulano comentário editado"
     })
   } catch (error) {
     if (error instanceof ZodError) {
-      expect("token: String must contain at least 1 character(s)")
+      expect("token: Required")
     }
   }
   })

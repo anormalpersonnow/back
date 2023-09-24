@@ -10,6 +10,7 @@ const postsMock: PostDB[] = [
     content: "Primeiro post",
     likes: 0,
     dislikes: 0, 
+    comments: 2,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   },
@@ -19,6 +20,7 @@ const postsMock: PostDB[] = [
     content: "Segundo post",
     likes: 0,
     dislikes: 0, 
+    comments: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   },
@@ -32,6 +34,7 @@ const postsWithCreatorMock: PostDBWithCreator[] = [
     content: "Primeiro post",
     likes: 0,
     dislikes: 0, 
+    comments: 2,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     creator_username: "Fulano"
@@ -42,6 +45,7 @@ const postsWithCreatorMock: PostDBWithCreator[] = [
     content: "Segundo post",
     likes: 0,
     dislikes: 0, 
+    comments: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     creator_username: "Astrodev"

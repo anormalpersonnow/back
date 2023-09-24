@@ -1,5 +1,6 @@
-import { Comment, CommentDB } from "../models/Comment"
+import { Comment, CommentDB, CommentModel } from "../models/Comment"
 import { CommentDatabase } from "../database/CommentDataBase"
+import { PostDatabase } from "../database/PostDataBase"
 import { COMMENT_LIKE, LikeOrDislikeDB } from "../models/LikeComment"
 import { NotFoundError } from "../errors/NotFoundError"
 import { UnauthorizedError } from "../errors/UnauthorizedError"
@@ -7,10 +8,11 @@ import { IdGenerator } from "../services/idGenerator"
 import { TokenManager } from "../services/TokenManager"
 import { USER_ROLES } from "../models/User"
 import { EditCommentInputDTO, EditCommentOutputDTO } from "../dtos/Comments/editComment.dto"
-import {GetCommentsInputDTO, GetCommentsOutputDTO} from "../dtos/Comments/getComments.dto"
+import { GetCommentsInputDTO, GetCommentsOutputDTO } from "../dtos/Comments/getComments.dto"
 import { CreateCommentInputDTO, CreateCommentOutputDTO } from "../dtos/Comments/createComment.dto"
 import { DeleteCommentInputDTO, DeleteCommentOutputDTO } from "../dtos/Comments/deleteComment.dto"
 import { LikeOrDislikeCommentInputDTO, LikeOrDislikeCommentOutputDTO } from "../dtos/Comments/likeOrDislike.dto"
+import { PostDB, Post } from "../models/Post"
 
 
 export class CommentBusiness {
@@ -18,7 +20,8 @@ export class CommentBusiness {
   constructor(
     private CommentDatabase: CommentDatabase,
     private idGenerator: IdGenerator,
-    private tokenManager: TokenManager
+    private tokenManager: TokenManager,
+    private PostDatabase: PostDatabase
   ) { }
 
 
@@ -39,6 +42,7 @@ export class CommentBusiness {
       .map((CommentWithCreator) => {
         const comment = new Comment(
           CommentWithCreator.id,
+          CommentWithCreator.post_id,
           CommentWithCreator.content,
           CommentWithCreator.likes,
           CommentWithCreator.dislikes,
@@ -59,10 +63,11 @@ export class CommentBusiness {
     input: CreateCommentInputDTO
   ): Promise<CreateCommentOutputDTO> => {
 
-    const { content, token } = input
+    const { postId, content, token } = input
 
     const id = this.idGenerator.generate()
     const payload = this.tokenManager.getPayload(token)
+    const postDB = await this.PostDatabase.findPostById(postId)
 
     if (payload === null) {
       throw new UnauthorizedError("Token inválido")
@@ -70,6 +75,7 @@ export class CommentBusiness {
 
     const newComment = new Comment(
       id,
+      postId,
       content,
       0,
       0,
@@ -78,9 +84,24 @@ export class CommentBusiness {
       payload.id,
       payload.username
     )
+    
+    const post = new Post (
+      postDB.id,
+      postDB.content,
+      postDB.likes,
+      postDB.dislikes,
+      postDB.comments,
+      postDB.created_at,
+      postDB.updated_at,
+      postDB.creator_id,
+      postDB.creator_username
+      )
+
+      post.addComment()
 
     const newCommentDB: CommentDB = {
       id: newComment.getId(),
+      post_id: newComment.getPostId(),
       creator_id: newComment.getCreatorId(),
       content: newComment.getContent(),
       likes: newComment.getLikes(),
@@ -89,9 +110,33 @@ export class CommentBusiness {
       updated_at: newComment.getUpdatedAt(),
     }
 
-    await this.CommentDatabase.insertComment(newCommentDB)
+    const newPostDB: PostDB = {
+      id: post.getId(),
+      creator_id: post.getCreatorId(),
+      content: post.getContent(),
+      likes: post.getLikes(),
+      dislikes: post.getDislikes(),
+      comments: post.getComments(),
+      created_at: post.getCreatedAt(),
+      updated_at: post.getUpdatedAt(),
+      }
 
-    const output = undefined
+    await this.CommentDatabase.insertComment(newCommentDB)
+    await this.PostDatabase.insertPost(newPostDB)
+
+    const output: CommentModel = {
+      id: newComment.getId(),
+      postId: newComment.getPostId(),
+      content: newComment.getContent(),
+      likes: newComment.getLikes(),
+      dislikes: newComment.getDislikes(),
+      createdAt: newComment.getCreatedAt(),
+      updatedAt: newComment.getUpdatedAt(),
+      creator: {
+        id: newComment.getCreatorId(),
+        username: newComment.getCreatorUsername()
+      }
+    }
 
     return output
   }
@@ -124,6 +169,7 @@ export class CommentBusiness {
 
     const comment = new Comment(
       CommentToEditDB.id,
+      CommentToEditDB.post_id,
       CommentToEditDB.content,
       CommentToEditDB.likes,
       CommentToEditDB.dislikes,
@@ -138,6 +184,7 @@ export class CommentBusiness {
 
     const updateCommentDB: CommentDB = {
       id: comment.getId(),
+      post_id: comment.getPostId(),
       creator_id: comment.getCreatorId(),
       content: comment.getContent(),
       likes: comment.getLikes(),
@@ -166,10 +213,11 @@ export class CommentBusiness {
     input: DeleteCommentInputDTO
   ): Promise<DeleteCommentOutputDTO> => {
 
-    const { idToDelete, token } = input
+    const { postId, idToDelete, token } = input
 
     const CommentToDeleteDB = await this.CommentDatabase.findCommentById(idToDelete)
     const payload = this.tokenManager.getPayload(token)
+    const postDB = await this.PostDatabase.findPostById(postId)
 
     if (payload === null) {
       throw new UnauthorizedError("Token inválido")
@@ -191,6 +239,32 @@ export class CommentBusiness {
       throw new UnauthorizedError("Somente o administrador ou dono do tópico podem acessar este recurso.")
     }
 
+    const post = new Post (
+      postDB.id,
+      postDB.content,
+      postDB.likes,
+      postDB.dislikes,
+      postDB.comments,
+      postDB.created_at,
+      postDB.updated_at,
+      postDB.creator_id,
+      postDB.creator_username
+      )
+
+      post.removeComment()
+
+    const newPostDB: PostDB = {
+      id: post.getId(),
+      creator_id: post.getCreatorId(),
+      content: post.getContent(),
+      likes: post.getLikes(),
+      dislikes: post.getDislikes(),
+      comments: post.getComments(),
+      created_at: post.getCreatedAt(),
+      updated_at: post.getUpdatedAt(),
+      }
+
+    await this.PostDatabase.insertPost(newPostDB)
 
     const output = {
       message: "Comentário deletado com sucesso",
@@ -218,6 +292,7 @@ export class CommentBusiness {
 
     const comment = new Comment(
       CommentDBwithCreator.id,
+      CommentDBwithCreator.post_id,
       CommentDBwithCreator.content,
       CommentDBwithCreator.likes,
       CommentDBwithCreator.dislikes,

@@ -36,21 +36,8 @@ describe("Testando likeOrDislikePost", () => {
     expect(output).toEqual({ "dislikes": 1, "likes": 0 })
   })
 
-  
-  test("deve disparar erro na ausência do input like", async () => {
-    try {
-      const input = LikeOrDislikePostSchema.parse({
-        postId: "comment01",
-        token: "token-mock-astrodev"
-      })
-    } catch (error) {
-      if (error instanceof ZodError) {
-        expect("like: Required")
-      }
-    }
-  })
 
-  test("deve disparar erro na ausência de commentId", async () => {
+  test("deve disparar erro na ausência de postId", async () => {
     try {
       const input = LikeOrDislikePostSchema.parse({
         postId: "",
@@ -59,7 +46,7 @@ describe("Testando likeOrDislikePost", () => {
       })
     } catch (error) {
       if (error instanceof ZodError) {
-        expect("commentId: String must contain at least 1 character(s)")
+        expect("postId: String must contain at least 1 character(s)")
       }
     }
   })
@@ -67,7 +54,7 @@ describe("Testando likeOrDislikePost", () => {
   test("deve disparar erro quando like não for boolean", async () => {
     try {
       const input = LikeOrDislikePostSchema.parse({
-        postId: "comment01",
+        postId: "post01",
         like: "true",
         token: "token-mock-astrodev"
       })
@@ -81,13 +68,53 @@ describe("Testando likeOrDislikePost", () => {
   test("deve disparar erro na ausência de token", async () => {
     try {
       const input = LikeOrDislikePostSchema.parse({
-        postId: "comment01",
+        postId: "post01",
         like: true,
         token: ""
       })
     } catch (error) {
       if (error instanceof ZodError) {
         expect("token: String must contain at least 1 character(s)")
+      }
+    }
+  })
+
+  
+  test("deve disparar erro na ausência do input postId", async () => {
+    try {
+      const input = LikeOrDislikePostSchema.parse({
+        like: true,
+        token: "token-mock-astrodev"
+      })
+    } catch (error) {
+      if (error instanceof ZodError) {
+        expect("postID: Required")
+      }
+    }
+  })
+
+  test("deve disparar erro na ausência do input like", async () => {
+    try {
+      const input = LikeOrDislikePostSchema.parse({
+        postId: "post01",
+        token: "token-mock-astrodev"
+      })
+    } catch (error) {
+      if (error instanceof ZodError) {
+        expect("like: Required")
+      }
+    }
+  })
+
+  test("deve disparar erro na ausência do input token", async () => {
+    try {
+      const input = LikeOrDislikePostSchema.parse({
+        postId: "post01",
+        like: true
+      })
+    } catch (error) {
+      if (error instanceof ZodError) {
+        expect("token: Required")
       }
     }
   })

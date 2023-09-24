@@ -30,6 +30,7 @@ export class PostDatabase extends BaseDatabase {
           `${PostDatabase.TABLE_POSTS}.content`,
           `${PostDatabase.TABLE_POSTS}.likes`,
           `${PostDatabase.TABLE_POSTS}.dislikes`,
+          `${PostDatabase.TABLE_POSTS}.comments`,
           `${PostDatabase.TABLE_POSTS}.created_at`,
           `${PostDatabase.TABLE_POSTS}.updated_at`,
           `${UserDatabase.TABLE_USERS}.username as creator_username`
@@ -52,6 +53,7 @@ export class PostDatabase extends BaseDatabase {
           `${PostDatabase.TABLE_POSTS}.content`,
           `${PostDatabase.TABLE_POSTS}.likes`,
           `${PostDatabase.TABLE_POSTS}.dislikes`,
+          `${PostDatabase.TABLE_POSTS}.comments`,
           `${PostDatabase.TABLE_POSTS}.created_at`,
           `${PostDatabase.TABLE_POSTS}.updated_at`,
           `${UserDatabase.TABLE_USERS}.username as creator_username`
@@ -81,6 +83,7 @@ export class PostDatabase extends BaseDatabase {
         `${PostDatabase.TABLE_POSTS}.content`,
         `${PostDatabase.TABLE_POSTS}.likes`,
         `${PostDatabase.TABLE_POSTS}.dislikes`,
+        `${PostDatabase.TABLE_POSTS}.comments`,
         `${PostDatabase.TABLE_POSTS}.created_at`,
         `${PostDatabase.TABLE_POSTS}.updated_at`,
         `${UserDatabase.TABLE_USERS}.username as creator_username`
@@ -151,6 +154,7 @@ export class PostDatabase extends BaseDatabase {
         `${PostDatabase.TABLE_POSTS}.content`,
         `${PostDatabase.TABLE_POSTS}.likes`,
         `${PostDatabase.TABLE_POSTS}.dislikes`,
+        `${PostDatabase.TABLE_POSTS}.comments`,
         `${PostDatabase.TABLE_POSTS}.created_at`,
         `${PostDatabase.TABLE_POSTS}.updated_at`,
         `${UserDatabase.TABLE_USERS}.username as creator_username`

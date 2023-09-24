@@ -40,8 +40,8 @@ export class CommentController {
   public createComment = async (req: Request, res: Response) => {
     try {
       const input = CreateCommentSchema.parse({
-        title: req.body.title,
         content: req.body.content,
+        postId: req.headers.postId,
         token: req.headers.authorization
       })
 
@@ -92,6 +92,7 @@ export class CommentController {
     try {
       const input = DeleteCommentSchema.parse({
         idToDelete: req.query.id,
+        postId: req.headers.postId,
         token: req.headers.authorization
       })
 

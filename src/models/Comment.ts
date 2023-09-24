@@ -1,5 +1,6 @@
 export interface CommentDB {
     id: string,
+    post_id: string,
     creator_id: string,
     content: string,
     likes: number,
@@ -14,6 +15,7 @@ export interface CommentDBWithCreator extends CommentDB{
 
 export interface CommentModel {
     id: string,
+    postId: string,
     content: string,
     likes: number,
     dislikes: number,
@@ -28,6 +30,7 @@ export interface CommentModel {
 export class Comment {
     constructor(
         private id: string,
+        private post_id: string,
         private content: string,
         private likes: number,
         private dislikes: number,
@@ -43,6 +46,14 @@ export class Comment {
 
     public setId(value: string): void {
         this.id = value
+    }
+
+    public getPostId(): string {
+        return this.post_id
+    }
+
+    public setPostId(value: string): void {
+        this.post_id = value
     }
 
     public getContent(): string {
@@ -127,6 +138,7 @@ export class Comment {
     public toDBModel(): CommentDB {
         return {
             id: this.id,
+            post_id: this.post_id,
             creator_id: this.creatorId,
             content: this.content,
             likes: this.likes,
@@ -139,6 +151,7 @@ export class Comment {
     public toBusinessModel(): CommentModel {
         return {
             id: this.id,
+            postId: this.post_id,
             content: this.content,
             likes: this.likes,
             dislikes: this.dislikes,

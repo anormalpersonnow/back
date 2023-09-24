@@ -1,5 +1,5 @@
 import { PostDatabase } from "../database/PostDataBase"
-import { Post, PostDB } from "../models/Post"
+import { Post, PostDB, PostModel } from "../models/Post"
 import { POST_LIKE, LikeOrDislikeDB } from "../models/LikePost"
 import { NotFoundError } from "../errors/NotFoundError"
 import { UnauthorizedError } from "../errors/UnauthorizedError"
@@ -39,6 +39,7 @@ export class PostBusiness {
       content,
       0,
       0,
+      0,
       new Date().toISOString(),
       new Date().toISOString(),
       payload.id,
@@ -50,14 +51,27 @@ export class PostBusiness {
       creator_id: newPost.getCreatorId(),
       content: newPost.getContent(),
       likes: newPost.getLikes(),
+      comments: newPost.getComments(),
       dislikes: newPost.getDislikes(),
       created_at: newPost.getCreatedAt(),
-      updated_at: newPost.getUpdatedAt(),
+      updated_at: newPost.getUpdatedAt()
     }
 
     await this.postDatabase.insertPost(newPostDB)
 
-    const output = undefined
+    const output: PostModel = {
+      id: newPost.getId(),
+      content: newPost.getContent(),
+      likes: newPost.getLikes(),
+      dislikes: newPost.getDislikes(),
+      comments: newPost.getComments(),
+      createdAt: newPost.getCreatedAt(),
+      updatedAt: newPost.getUpdatedAt(),
+      creator: {
+        id: newPost.getCreatorId(),
+        username: newPost.getCreatorUsername()
+      }
+    }
 
     return output
   }
@@ -83,6 +97,7 @@ export class PostBusiness {
           postWithCreator.content,
           postWithCreator.likes,
           postWithCreator.dislikes,
+          postWithCreator.comments,
           postWithCreator.created_at,
           postWithCreator.updated_at,
           postWithCreator.creator_id,
@@ -127,6 +142,7 @@ export class PostBusiness {
       postToEditDB.content,
       postToEditDB.likes,
       postToEditDB.dislikes,
+      postToEditDB.comments,
       postToEditDB.created_at,
       new Date().toISOString(),
       postToEditDB.creator_id,
@@ -142,6 +158,7 @@ export class PostBusiness {
       content: post.getContent(),
       likes: post.getLikes(),
       dislikes: post.getDislikes(),
+      comments: post.getComments(),
       created_at: post.getCreatedAt(),
       updated_at: post.getUpdatedAt()
     }
@@ -221,6 +238,7 @@ export class PostBusiness {
       postDBwithCreator.content,
       postDBwithCreator.likes,
       postDBwithCreator.dislikes,
+      postDBwithCreator.comments,
       postDBwithCreator.created_at,
       postDBwithCreator.updated_at,
       postDBwithCreator.creator_id,

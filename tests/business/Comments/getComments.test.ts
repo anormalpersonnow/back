@@ -4,12 +4,14 @@ import { TokenManagerMock } from "../../mocks/TokenManagerMock"
 import { ZodError } from "zod"
 import { CommentDatabaseMock } from "../../mocks/CommentDatabaseMock"
 import { GetCommentsSchema } from "../../../src/dtos/Comments/getComments.dto"
+import { PostDatabaseMock } from "../../mocks/PostDataBaseMock"
 
 describe("Testando get comments", () => {
   const comentBusiness = new CommentBusiness(
     new CommentDatabaseMock(),
     new IdGeneratorMock(),
-    new TokenManagerMock()
+    new TokenManagerMock(),
+    new PostDatabaseMock()
   )
 
   test("deve retornar todos os comentários", async () => {
@@ -23,6 +25,7 @@ describe("Testando get comments", () => {
     expect(output).toEqual([
       {
         id: "comment01",
+        postId: "post01",
         content: "Fulano comentário",
         likes: 0,
         dislikes: 0,
@@ -35,6 +38,7 @@ describe("Testando get comments", () => {
       },
       {
         id: "comment02",
+        postId: "post01",
         content: "Astrodev comentário",
         likes: 0,
         dislikes: 0,
@@ -60,6 +64,7 @@ describe("Testando get comments", () => {
     expect(output).toEqual([
       {
         id: "comment02",
+        postId: "post01",
         content: "Astrodev comentário",
         likes: 0,
         dislikes: 0,
@@ -83,4 +88,17 @@ describe("Testando get comments", () => {
     }
   }
   })
+
+  test("deve disparar erro na ausência do input token", async () => {
+    try {
+      const input = GetCommentsSchema.parse({
+        content: "Astrodev"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("token: Required")
+    }
+  }
+  })
+
 })

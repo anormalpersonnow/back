@@ -1,22 +1,24 @@
 import express from "express"
-import { PostBusiness } from "../business/PostBusiness"
-import { PostController } from "../controller/PostController"
-import { PostDatabase } from "../database/PostDataBase"
+import { CommentBusiness } from "../business/CommentBusiness"
+import { CommentController } from "../controller/CommentController"
+import { CommentDatabase } from "../database/CommentDataBase"
 import { IdGenerator } from "../services/idGenerator"
 import { TokenManager } from "../services/TokenManager"
+import { PostDatabase } from "../database/PostDataBase"
 
-export const topicRouter = express.Router()
+export const commentRouter = express.Router()
 
-const postController = new PostController(
-    new PostBusiness(
-        new PostDatabase(),
+const commentController = new CommentController(
+    new CommentBusiness(
+        new CommentDatabase(),
         new IdGenerator(),
-        new TokenManager()
+        new TokenManager(),
+        new PostDatabase()
     )
 )
 
-topicRouter.get("/", postController.getPosts)
-topicRouter.post("/", postController.createPost)
-topicRouter.put("/:id", postController.editPostById)
-topicRouter.put("/:id/like", postController.likeOrDislikePost)
-topicRouter.delete("/:id", postController.deletePostById)
+commentRouter.get("/", commentController.getComments)
+commentRouter.post("/", commentController.createComment)
+commentRouter.put("/:id", commentController.editCommentByid)
+commentRouter.put("/:id/like", commentController.likeOrDislikeComment)
+commentRouter.delete("/:id", commentController.deleteCommentById)

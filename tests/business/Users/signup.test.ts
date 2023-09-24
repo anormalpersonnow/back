@@ -24,52 +24,12 @@ describe("Testando signup", () => {
     const output = await userBusiness.signup(input)
 
     expect(output).toEqual({
+      id: "id-mock",
+      username:"Ciclana",
+      email:"ciclana@email.com",
+      role:"ADMIN",
       token: "token-mock"
     })
-  })
-
-     
-  test("deve disparar erro caso o input obrigatório username tenha outro nome", async () => {
-    try {
-      const input = SignupSchema.parse({
-        name: "id-mock-fulano",
-        email: "fulano@email.com",
-        password: "senha1"
-    })
-  } catch (error) {
-    if (error instanceof ZodError) {
-      expect("username: Required")
-    }
-  }
-  })
-  
-  
-  test("deve disparar erro caso o input obrigatório email tenha outro nome", async () => {
-    try {
-      const input = SignupSchema.parse({
-        username: "id-mock-fulano",
-        userEmail: "fulano@email.com",
-        password: "senha1"
-    })
-  } catch (error) {
-    if (error instanceof ZodError) {
-      expect("email: Required")
-    }
-  }
-  })
-
-  test("deve disparar erro caso o input obrigatório password tenha outro nome", async () => {
-    try {
-      const input = SignupSchema.parse({
-        username: "id-mock-fulano",
-        email: "fulano@email.com",
-        senha: "token-mock-astrodev"
-    })
-  } catch (error) {
-    if (error instanceof ZodError) {
-      expect("password: Required")
-    }
-  }
   })
 
   test("deve disparar erro na ausência de username", async () => {
@@ -127,5 +87,47 @@ describe("Testando signup", () => {
     }
   }
   })
+
+      
+  test("deve disparar erro na ausência do input username", async () => {
+    try {
+      const input = SignupSchema.parse({
+        email: "fulano@email.com",
+        password: "senha1"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("username: Required")
+    }
+  }
+  })
+  
+  
+  test("deve disparar na ausência do input email", async () => {
+    try {
+      const input = SignupSchema.parse({
+        username: "id-mock-fulano",
+        password: "senha1"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("email: Required")
+    }
+  }
+  })
+
+  test("deve disparar erro na ausência do input password", async () => {
+    try {
+      const input = SignupSchema.parse({
+        username: "id-mock-fulano",
+        email: "fulano@email.com",
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("password: Required")
+    }
+  }
+  })
+
 
 })

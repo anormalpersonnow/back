@@ -23,6 +23,10 @@ describe("Testando login", () => {
     const output = await userBusiness.login(input)
 
     expect(output).toEqual({
+      id: "id-mock-fulano",
+      username:"Fulano",
+      email:"fulano@email.com",
+      role:"NORMAL",
       token: "token-mock-fulano"
     })
   })

@@ -53,4 +53,28 @@ describe("Testando deleteUser", () => {
   }
   })
 
+  test("deve disparar erro na ausência do input idToDelete", async () => {
+    try {
+      const input = DeleteUserSchema.parse({
+      token: "token-mock-fulano"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("idToDelete: Required")
+    }
+  }
+  })
+
+  test("deve disparar erro na ausência do input token", async () => {
+    try {
+      const input = DeleteUserSchema.parse({
+      idToDelete: "id-mokc-fulano"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("token: Required")
+    }
+  }
+  })
+
 })

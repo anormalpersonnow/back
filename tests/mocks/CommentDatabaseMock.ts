@@ -7,6 +7,7 @@ import { BaseDatabase } from "../../src/database/BaseDataBase";
 const commentsMock: CommentDB[] = [
   {
     id: "comment01",
+    post_id: "post01",
     creator_id: "id-mock-fulano",
     content: "Primeiro comentário",
     likes: 0,
@@ -16,6 +17,7 @@ const commentsMock: CommentDB[] = [
   },
   {
     id: "comment02",
+    post_id: "post01",
     creator_id: "id-mock-astrodev",
     content: "Segundo comentário",
     likes: 0,
@@ -29,6 +31,7 @@ const commentsMock: CommentDB[] = [
 const commentsWithCreatorMock: CommentDBWithCreator[] = [
   {
     id: "comment01",
+    post_id: "post01",
     creator_id: "id-mock-fulano",
     content: "Fulano comentário",
     likes: 0,
@@ -39,6 +42,7 @@ const commentsWithCreatorMock: CommentDBWithCreator[] = [
   },
   {
     id: "comment02",
+    post_id: "post01",
     creator_id: "id-mock-astrodev",
     content: "Astrodev comentário",
     likes: 0,

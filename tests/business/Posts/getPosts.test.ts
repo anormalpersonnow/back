@@ -26,6 +26,7 @@ describe("Testando getPosts", () => {
         content: "Primeiro post",
         likes: 0,
         dislikes: 0,
+        comments: 2,
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
         creator: {
@@ -38,6 +39,7 @@ describe("Testando getPosts", () => {
         content: "Segundo post",
         likes: 0,
         dislikes: 0,
+        comments: 0,
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
         creator: {
@@ -63,6 +65,7 @@ describe("Testando getPosts", () => {
         content: "Segundo post",
         likes: 0,
         dislikes: 0,
+        comments: 0,
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
         creator: {
@@ -84,5 +87,17 @@ describe("Testando getPosts", () => {
     }
   }
   })
+
+  test("deve disparar erro na ausência do input token", async () => {
+    try {
+      const input = GetPostsSchema.parse({
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("token: Required")
+    }
+  }
+  })
+
 
 })

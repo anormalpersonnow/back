@@ -2,11 +2,13 @@ import { LikeOrDislikeDB, COMMENT_LIKE } from "../models/LikeComment";
 import { CommentDB, CommentDBWithCreator } from "../models/Comment";
 import { BaseDatabase } from "./BaseDataBase";
 import { UserDatabase } from "./UserDataBase";
+import { PostDatabase } from "./PostDataBase";
+import { Post, PostDB } from "../models/Post";
 
 export class CommentDatabase extends BaseDatabase {
 
   public static TABLE_COMMENTS = "comments";
-  public static TABLE_LIKES_DISLIKES = "like_dislike_comments"
+  public static TABLE_LIKES_DISLIKES = "like_dislike_comments";
 
   public insertComment = async (
     newCommentDB: CommentDB
@@ -28,6 +30,7 @@ export class CommentDatabase extends BaseDatabase {
         .connection(CommentDatabase.TABLE_COMMENTS)
         .select(
           `${CommentDatabase.TABLE_COMMENTS}.id`,
+          `${CommentDatabase.TABLE_COMMENTS}.post_id`,
           `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
           `${CommentDatabase.TABLE_COMMENTS}.content`,
           `${CommentDatabase.TABLE_COMMENTS}.likes`,
@@ -41,6 +44,11 @@ export class CommentDatabase extends BaseDatabase {
           `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
           "=",
           `${UserDatabase.TABLE_USERS}.id`
+        ).join(
+          `${PostDatabase.TABLE_POSTS}`,
+          `${CommentDatabase.TABLE_COMMENTS}.post_id`,
+          "=",
+          `${PostDatabase.TABLE_POSTS}.id`
         ).where(`${CommentDatabase.TABLE_COMMENTS}.content`, "LIKE", `%${q}%`)
 
       commentsDB = result
@@ -50,6 +58,7 @@ export class CommentDatabase extends BaseDatabase {
         .connection(CommentDatabase.TABLE_COMMENTS)
         .select(
           `${CommentDatabase.TABLE_COMMENTS}.id`,
+          `${CommentDatabase.TABLE_COMMENTS}.post_id`,
           `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
           `${CommentDatabase.TABLE_COMMENTS}.content`,
           `${CommentDatabase.TABLE_COMMENTS}.likes`,
@@ -63,6 +72,11 @@ export class CommentDatabase extends BaseDatabase {
           `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
           "=",
           `${UserDatabase.TABLE_USERS}.id`
+        ).join(
+          `${PostDatabase.TABLE_POSTS}`,
+          `${CommentDatabase.TABLE_COMMENTS}.post_id`,
+          "=",
+          `${PostDatabase.TABLE_POSTS}.id`
         )
 
       commentsDB = result
@@ -80,6 +94,7 @@ export class CommentDatabase extends BaseDatabase {
       .connection(CommentDatabase.TABLE_COMMENTS)
       .select(
         `${CommentDatabase.TABLE_COMMENTS}.id`,
+        `${CommentDatabase.TABLE_COMMENTS}.post_id`,
         `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
         `${CommentDatabase.TABLE_COMMENTS}.content`,
         `${CommentDatabase.TABLE_COMMENTS}.likes`,
@@ -93,6 +108,11 @@ export class CommentDatabase extends BaseDatabase {
         `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
         "=",
         `${UserDatabase.TABLE_USERS}.id`
+      ).join(
+        `${PostDatabase.TABLE_POSTS}`,
+        `${CommentDatabase.TABLE_COMMENTS}.post_id`,
+        "=",
+        `${PostDatabase.TABLE_POSTS}.id`
       )
       .where({ [`${CommentDatabase.TABLE_COMMENTS}.id`]: id })
 
@@ -116,6 +136,11 @@ export class CommentDatabase extends BaseDatabase {
         `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
         "=",
         `${UserDatabase.TABLE_USERS}.id`
+      ).join(
+        `${PostDatabase.TABLE_POSTS}`,
+        `${CommentDatabase.TABLE_COMMENTS}.post_id`,
+        "=",
+        `${PostDatabase.TABLE_POSTS}.id`
       ).where({ creator_id: id })
 
     return result as CommentDBWithCreator | undefined
@@ -141,15 +166,15 @@ export class CommentDatabase extends BaseDatabase {
       .where({ id: idToDelete })
   }
 
-
   public likeOrDislikeComment = async (
     id: string
-  ): Promise<CommentDBWithCreator | undefined> => {
+  ): Promise<CommentDB | undefined> => {
 
     const [result] = await BaseDatabase
       .connection(CommentDatabase.TABLE_COMMENTS)
       .select(
         `${CommentDatabase.TABLE_COMMENTS}.id`,
+        `${CommentDatabase.TABLE_COMMENTS}.post_id`,
         `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
         `${CommentDatabase.TABLE_COMMENTS}.content`,
         `${CommentDatabase.TABLE_COMMENTS}.likes`,
@@ -165,7 +190,7 @@ export class CommentDatabase extends BaseDatabase {
         `${UserDatabase.TABLE_USERS}.id`
       ).where({ [`${CommentDatabase.TABLE_COMMENTS}.id`]: id })
 
-    return result as CommentDBWithCreator | undefined
+    return result as CommentDB | undefined
   }
 
 

@@ -10,6 +10,10 @@ export interface SignupInputDTO {
 }
 
 export interface SignupOutputDTO {
+  id: string,
+  username: string,
+  email: string,
+  role: USER_ROLES,
   token: string
 }
 

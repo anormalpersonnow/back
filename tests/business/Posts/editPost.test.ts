@@ -54,19 +54,6 @@ describe("Testando editPost", () => {
   }
   })
 
-  test("deve disparar erro quando o campo content não for criado", async () => {
-    try {
-      const input = EditPostSchema.parse({
-        idToEdit: "comment01",
-        token: "token-mock-fulano"
-    })
-  } catch (error) {
-    if (error instanceof ZodError) {
-      expect("content: Required")
-    }
-  }
-  })
-
   test("deve disparar erro na ausência de token", async () => {
     try {
       const input = EditPostSchema.parse({
@@ -80,5 +67,45 @@ describe("Testando editPost", () => {
     }
   }
   })
+
+  test("deve disparar erro na ausência do input idToEdit", async () => {
+    try {
+      const input = EditPostSchema.parse({
+        content: "Fulano comentário editado",
+        token: "token-mock-fulano"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("idToEdit: Required")
+    }
+  }
+  })
+
+  test("deve disparar erro na ausência do input content", async () => {
+    try {
+      const input = EditPostSchema.parse({
+        idToEdit: "comment01",
+        token: "token-mock-fulano"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("content: Required")
+    }
+  }
+  })
+
+  test("deve disparar erro na ausência do input token", async () => {
+    try {
+      const input = EditPostSchema.parse({
+        idToEdit: "comment01",
+        content: "Fulano comentário editado",
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("token: Required")
+    }
+  }
+  })
+
 
 })

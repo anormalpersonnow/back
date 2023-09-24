@@ -66,6 +66,10 @@ export class UserBusiness {
     })
 
     const output = {
+      id: newUser.getId(),
+      username: newUser.getUsername(),
+      email: newUser.getEmail(),
+      role: newUser.getRole(),
       token: token
     }
 
@@ -95,6 +99,10 @@ export class UserBusiness {
     })
 
     const output: LoginOutputDTO = {
+      id: userDB.id,
+      username: userDB.username,
+      email: userDB.email,
+      role: userDB.role,
       token: token
     }
 

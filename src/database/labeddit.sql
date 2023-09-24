@@ -11,16 +11,17 @@ CREATE TABLE if NOT EXISTS users(
 
 CREATE TABLE if NOT EXISTS comments(
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
+    post_id TEXT NOT NULL,
     creator_id TEXT NOT NULL,
     content TEXT NOT NULL,
     likes INTEGER NOT NULL,
     dislikes INTEGER NOT NULL,
     created_at TEXT DEFAULT (DATETIME('now')) NOT NULL,
-    FOREIGN KEY (creator_id) REFERENCES users(id)  
+    FOREIGN KEY (creator_id) REFERENCES users(id),
+    FOREIGN KEY (post_id) REFERENCES posts(id)  
     ON UPDATE CASCADE
     ON DELETE CASCADE
 )
-
 
 CREATE TABLE if NOT EXISTS posts(    
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
@@ -28,12 +29,14 @@ CREATE TABLE if NOT EXISTS posts(
     content TEXT NOT NULL,
     likes INTEGER NOT NULL,
     dislikes INTEGER NOT NULL,
+    comments INTEGER NOT NULL,
     created_at TEXT DEFAULT (DATETIME('now')) NOT NULL ,
     updated_at TEXT DEFAULT (DATETIME('now')) NOT NULL,
     FOREIGN KEY (creator_id) REFERENCES users(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE  
 );
+
 
 
 CREATE TABLE if NOT EXISTS likes_dislikes_posts(    

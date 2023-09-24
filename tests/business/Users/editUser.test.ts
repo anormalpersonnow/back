@@ -31,7 +31,7 @@ describe("Testando editUser", () => {
   test("deve disparar erro na ausência de idToEdit", async () => {
     try {
       const input = EditUserSchema.parse({
-        idToEdit: "id-mock-fulano",
+        idToEdit: "",
         username: "Fulane",
         token: "token-mock-astrodev"
     })
@@ -52,6 +52,33 @@ describe("Testando editUser", () => {
   } catch (error) {
     if (error instanceof ZodError) {
       expect("token: String must contain at least 1 character(s)")
+    }
+  }
+  })
+
+  test("deve disparar erro na ausência do input idToEdit", async () => {
+    try {
+      const input = EditUserSchema.parse({
+        username: "Fulane",
+        token: "token-mock-fulano"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("idToEdit: Required")
+    }
+  }
+  })
+
+  
+  test("deve disparar erro na ausência do input token", async () => {
+    try {
+      const input = EditUserSchema.parse({
+        idToEdit: "id-mock-fulano",
+        username: "Fulane"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("token: Required")
     }
   }
   })

@@ -39,12 +39,36 @@ describe("Testando deletePost", () => {
   test("deve disparar erro na ausência de token", async () => {
     try {
       const input = DeletePostSchema.parse({
-        idToDelete: "comment01",
+        idToDelete: "post01",
         token: ""
     })
   } catch (error) {
     if (error instanceof ZodError) {
       expect("token: String must contain at least 1 character(s)")
+    }
+  }
+  })
+
+  test("deve disparar erro na ausência do input", async () => {
+    try {
+      const input = DeletePostSchema.parse({
+        token: "token-mock-astrodev"
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("idToDelete: Required")
+    }
+  }
+  })
+
+  test("deve disparar erro na ausência do input token", async () => {
+    try {
+      const input = DeletePostSchema.parse({
+        idToDelete: "post01",
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      expect("token: Required")
     }
   }
   })
