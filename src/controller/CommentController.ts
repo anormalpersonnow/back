@@ -17,8 +17,7 @@ export class CommentController {
 
     try {
           const input = GetCommentsSchema.parse({
-            content: req.body.content,
-            token: req.headers.authorization
+            content: req.body.content
         })
 
       const output = await this.commentBusiness.getComments(input)
@@ -41,7 +40,7 @@ export class CommentController {
     try {
       const input = CreateCommentSchema.parse({
         content: req.body.content,
-        postId: req.headers.postId,
+        postId: req.params.postId,
         token: req.headers.authorization
       })
 
@@ -65,7 +64,7 @@ export class CommentController {
     try {
 
       const input = EditCommentSchema.parse({
-        idToEdit: req.query.id,
+        idToEdit: req.params.id,
         title: req.body.title,
         content: req.body.content,
         token: req.headers.authorization
@@ -91,7 +90,7 @@ export class CommentController {
   public deleteCommentById = async (req: Request, res: Response) => {
     try {
       const input = DeleteCommentSchema.parse({
-        idToDelete: req.query.id,
+        idToDelete: req.params.id,
         postId: req.headers.postId,
         token: req.headers.authorization
       })

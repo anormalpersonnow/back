@@ -63,7 +63,7 @@ export class PostController {
     try {
 
       const input = EditPostSchema.parse({
-        idToEdit: req.query.id,
+        idToEdit: req.params.id,
         content: req.body.content,
         token: req.headers.authorization
       })
@@ -88,7 +88,7 @@ export class PostController {
   public deletePostById = async (req: Request, res: Response) => {
     try {
       const input = DeletePostSchema.parse({
-        idToDelete: req.query.id,
+        idToDelete: req.params.id,
         token: req.headers.authorization
       })
 

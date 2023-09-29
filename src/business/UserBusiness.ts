@@ -30,11 +30,11 @@ export class UserBusiness {
 
     const id = this.idGenerator.generate()
     const hashedPassword = await this.hashManager.hash(password)
-    const userDBExists = await this.userDatabase.findUserById(id)
+    const userDBExists = await this.userDatabase.findUserByEmail(email)
     const users = await this.userDatabase.findUsers(username)
 
     if (userDBExists) {
-      throw new Error("'ID' já existe")
+      throw new Error("Email já cadastrado")
     }
 
     const role = users.length === 0 ? USER_ROLES.ADMIN : USER_ROLES.NORMAL
@@ -123,17 +123,17 @@ export class UserBusiness {
     let userFoundDB = await this.userDatabase.findUsers(username)
 
     const users = userFoundDB
-    .map((userDB) => {
-      const user = new User(
-        userDB.id,
-        userDB.username,
-        userDB.email,
-        userDB.password,
-        userDB.role,
-        userDB.created_at
-      )
-      return user.toBusinessModel()
-    })
+      .map((userDB) => {
+        const user = new User(
+          userDB.id,
+          userDB.username,
+          userDB.email,
+          userDB.password,
+          userDB.role,
+          userDB.created_at
+        )
+        return user.toBusinessModel()
+      })
 
     const output: GetUsersOutputDTO = users
     return output
