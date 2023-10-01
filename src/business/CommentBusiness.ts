@@ -110,8 +110,8 @@ export class CommentBusiness {
       updated_at: newComment.getUpdatedAt(),
     }
 
-    const newPostDB: PostDB = {
-      id: post.getId(),
+    const updatedPostDB: PostDB = {
+      id: postId,
       creator_id: post.getCreatorId(),
       content: post.getContent(),
       likes: post.getLikes(),
@@ -122,7 +122,7 @@ export class CommentBusiness {
       }
 
     await this.CommentDatabase.insertComment(newCommentDB)
-    await this.PostDatabase.insertPost(newPostDB)
+    await this.PostDatabase.updatePostById(postId, updatedPostDB)
 
     const output: CommentModel = {
       id: newComment.getId(),

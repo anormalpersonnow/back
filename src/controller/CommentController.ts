@@ -17,7 +17,8 @@ export class CommentController {
 
     try {
           const input = GetCommentsSchema.parse({
-            content: req.body.content
+            content: req.body.content,
+            token: req.headers.authorization
         })
 
       const output = await this.commentBusiness.getComments(input)
@@ -40,7 +41,7 @@ export class CommentController {
     try {
       const input = CreateCommentSchema.parse({
         content: req.body.content,
-        postId: req.params.postId,
+        postId: req.body.postId,
         token: req.headers.authorization
       })
 
